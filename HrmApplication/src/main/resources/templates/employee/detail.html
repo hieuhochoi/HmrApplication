@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết Nhân viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"><i class="fas fa-users-cog"></i> HRM System</a>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+            <li class="nav-item"><a class="nav-link" href="/employees">Danh sách</a></li>
+            <li class="nav-item"><a class="nav-link" href="/logout">Đăng xuất</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4><i class="fas fa-user-circle"></i> Hồ sơ Nhân viên</h4>
+            <a th:href="@{/employees/edit/{id}(id=${employee.id})}" class="btn btn-warning btn-sm">
+                <i class="fas fa-edit"></i> Chỉnh sửa
+            </a>
+        </div>
+        <div class="card-body">
+            <!-- Thông tin cơ bản -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h5 class="border-bottom pb-2"><i class="fas fa-info-circle"></i> Thông tin cơ bản</h5>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Họ và tên:</strong>
+                    <p th:text="${employee.fullName}" class="text-primary"></p>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <strong>Giới tính:</strong>
+                    <p th:text="${employee.gender}"></p>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <strong>Ngày sinh:</strong>
+                    <p th:text="${employee.dateOfBirth}"></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Số CCCD:</strong>
+                    <p th:text="${employee.citizenId}"></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Điện thoại:</strong>
+                    <p th:text="${employee.phone}"></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Email:</strong>
+                    <p th:text="${employee.email}"></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Trạng thái:</strong>
+                    <span class="badge bg-success" th:if="${employee.status == 'ACTIVE'}">Hoạt động</span>
+                    <span class="badge bg-danger" th:if="${employee.status != 'ACTIVE'}">Nghỉ việc</span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Quê quán:</strong>
+                    <p th:text="${employee.birthPlace}"></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Địa chỉ thường trú:</strong>
+                    <p th:text="${employee.address}"></p>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <strong>Nơi ở hiện tại:</strong>
+                    <p th:text="${employee.currentAddress}"></p>
+                </div>
+            </div>
+
+            <!-- Các nút quản lý -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h5 class="border-bottom pb-2"><i class="fas fa-tasks"></i> Quản lý hồ sơ</h5>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a th:href="@{/educations/employee/{id}(id=${employee.id})}" class="btn btn-info w-100">
+                        <i class="fas fa-graduation-cap"></i> Trình độ
+                    </a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a th:href="@{/insurances/employee/{id}(id=${employee.id})}" class="btn btn-warning w-100">
+                        <i class="fas fa-shield-alt"></i> Bảo hiểm
+                    </a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a th:href="@{/contracts/employee/{id}(id=${employee.id})}" class="btn btn-secondary w-100">
+                        <i class="fas fa-file-contract"></i> Hợp đồng
+                    </a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a th:href="@{/workhistories/employee/{id}(id=${employee.id})}" class="btn btn-success w-100">
+                        <i class="fas fa-history"></i> Quá trình CT
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="/employees" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

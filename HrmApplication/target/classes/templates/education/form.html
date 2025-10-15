@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin Trình độ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"><i class="fas fa-users-cog"></i> HRM System</a>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+            <li class="nav-item"><a class="nav-link" href="/logout">Đăng xuất</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h4><i class="fas fa-graduation-cap"></i> Thông tin Trình độ</h4>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/educations/save}" th:object="${education}" method="post">
+                <input type="hidden" th:field="*{id}">
+                <input type="hidden" th:field="*{employee.id}">
+
+                <!-- Thông tin cơ bản -->
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h5 class="border-bottom pb-2 text-success">
+                            <i class="fas fa-info-circle"></i> Thông tin cơ bản
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-users"></i> Thành phần bản thân
+                        </label>
+                        <select class="form-select" th:field="*{familyBackground}">
+                            <option value="">-- Chọn --</option>
+                            <option value="Công nhân">Công nhân</option>
+                            <option value="Nông dân">Nông dân</option>
+                            <option value="Trí thức">Trí thức</option>
+                            <option value="Cán bộ">Cán bộ</option>
+                            <option value="Tiểu thương">Tiểu thương</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-book"></i> Trình độ văn hóa
+                        </label>
+                        <select class="form-select" th:field="*{culturalLevel}">
+                            <option value="">-- Chọn --</option>
+                            <option value="12/12">12/12</option>
+                            <option value="10/12">10/12</option>
+                            <option value="9/12">9/12</option>
+                            <option value="Dưới 9/12">Dưới 9/12</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Chuyên môn và bằng cấp -->
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h5 class="border-bottom pb-2 text-success">
+                            <i class="fas fa-certificate"></i> Chuyên môn và Bằng cấp
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-laptop-code"></i> Chuyên môn
+                        </label>
+                        <input type="text" class="form-control" th:field="*{specialization}"
+                               placeholder="VD: Công nghệ thông tin, Kế toán, Quản trị kinh doanh...">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-award"></i> Bằng cấp
+                        </label>
+                        <select class="form-select" th:field="*{degree}">
+                            <option value="">-- Chọn --</option>
+                            <option value="Tiến sĩ">Tiến sĩ</option>
+                            <option value="Thạc sĩ">Thạc sĩ</option>
+                            <option value="Đại học">Đại học</option>
+                            <option value="Cao đẳng">Cao đẳng</option>
+                            <option value="Trung cấp">Trung cấp</option>
+                            <option value="Chứng chỉ">Chứng chỉ</option>
+                            <option value="Không có">Không có</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-university"></i> Trường học
+                        </label>
+                        <input type="text" class="form-control" th:field="*{university}"
+                               placeholder="VD: Đại học Bách Khoa Hà Nội, Đại học Kinh tế Quốc dân...">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-calendar"></i> Năm tốt nghiệp
+                        </label>
+                        <input type="number" class="form-control" th:field="*{graduationYear}"
+                               min="1950" max="2030" placeholder="VD: 2020">
+                    </div>
+                </div>
+
+                <!-- Ngoại ngữ -->
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h5 class="border-bottom pb-2 text-success">
+                            <i class="fas fa-globe"></i> Ngoại ngữ
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-language"></i> Ngoại ngữ
+                        </label>
+                        <select class="form-select" th:field="*{foreignLanguage}">
+                            <option value="">-- Chọn --</option>
+                            <option value="Tiếng Anh">Tiếng Anh</option>
+                            <option value="Tiếng Nhật">Tiếng Nhật</option>
+                            <option value="Tiếng Trung">Tiếng Trung</option>
+                            <option value="Tiếng Hàn">Tiếng Hàn</option>
+                            <option value="Tiếng Pháp">Tiếng Pháp</option>
+                            <option value="Tiếng Đức">Tiếng Đức</option>
+                            <option value="Tiếng Nga">Tiếng Nga</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-star"></i> Trình độ ngoại ngữ
+                        </label>
+                        <select class="form-select" th:field="*{languageLevel}">
+                            <option value="">-- Chọn --</option>
+                            <option value="A1">A1 - Sơ cấp</option>
+                            <option value="A2">A2 - Sơ cấp cao</option>
+                            <option value="B1">B1 - Trung cấp</option>
+                            <option value="B2">B2 - Trung cấp cao</option>
+                            <option value="C1">C1 - Cao cấp</option>
+                            <option value="C2">C2 - Thành thạo</option>
+                            <option value="TOEIC 450+">TOEIC 450+</option>
+                            <option value="TOEIC 550+">TOEIC 550+</option>
+                            <option value="TOEIC 750+">TOEIC 750+</option>
+                            <option value="IELTS 5.0+">IELTS 5.0+</option>
+                            <option value="IELTS 6.0+">IELTS 6.0+</option>
+                            <option value="IELTS 7.0+">IELTS 7.0+</option>
+                            <option value="JLPT N5">JLPT N5</option>
+                            <option value="JLPT N4">JLPT N4</option>
+                            <option value="JLPT N3">JLPT N3</option>
+                            <option value="JLPT N2">JLPT N2</option>
+                            <option value="JLPT N1">JLPT N1</option>
+                            <option value="HSK 1">HSK 1</option>
+                            <option value="HSK 2">HSK 2</option>
+                            <option value="HSK 3">HSK 3</option>
+                            <option value="HSK 4">HSK 4</option>
+                            <option value="HSK 5">HSK 5</option>
+                            <option value="HSK 6">HSK 6</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Thông tin hữu ích -->
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-lightbulb"></i> Thông tin hữu ích:</h6>
+                    <ul class="mb-0">
+                        <li><strong>Trình độ văn hóa:</strong> Cấp học cao nhất đã hoàn thành</li>
+                        <li><strong>Chuyên môn:</strong> Ngành nghề/lĩnh vực đào tạo</li>
+                        <li><strong>Bằng cấp:</strong> Văn bằng cao nhất đạt được</li>
+                        <li><strong>Ngoại ngữ:</strong> Ngôn ngữ và trình độ theo khung tham chiếu quốc tế</li>
+                    </ul>
+                </div>
+
+                <!-- Buttons -->
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a th:href="@{/educations/employee/{id}(id=${education.employee?.id})}"
+                       class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Hủy
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

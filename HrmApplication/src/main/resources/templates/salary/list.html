@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Lương</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">HRM System</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-4">
+        <h2><i class="fas fa-money-bill-wave"></i> Quản lý Lương</h2>
+        <a href="/salaries/new" class="btn btn-success"><i class="fas fa-plus"></i> Thêm mới</a>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Tháng</label>
+                    <select name="month" class="form-select">
+                        <option value="">-- Chọn tháng --</option>
+                        <option th:each="i : ${#numbers.sequence(1, 12)}"
+                                th:value="${i}"
+                                th:text="${i}"></option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Năm</label>
+                    <input type="number" name="year" class="form-control" value="2025">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-hover">
+        <thead class="table-success">
+        <tr>
+            <th>Nhân viên</th>
+            <th>Tháng/Năm</th>
+            <th>Lương CB</th>
+            <th>Phụ cấp</th>
+            <th>Thưởng</th>
+            <th>Tăng ca</th>
+            <th>Ứng lương</th>
+            <th>Tổng lương</th>
+            <th>Trạng thái</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="sal : ${salaries}">
+            <td th:text="${sal.employee.fullName}"></td>
+            <td th:text="${sal.month + '/' + sal.year}"></td>
+            <td th:text="${#numbers.formatDecimal(sal.baseSalary, 0, 'COMMA', 0, 'POINT')}"></td>
+            <td th:text="${#numbers.formatDecimal(sal.allowance, 0, 'COMMA', 0, 'POINT')}"></td>
+            <td th:text="${#numbers.formatDecimal(sal.bonus, 0, 'COMMA', 0, 'POINT')}"></td>
+            <td th:text="${#numbers.formatDecimal(sal.overtime, 0, 'COMMA', 0, 'POINT')}"></td>
+            <td th:text="${#numbers.formatDecimal(sal.advance, 0, 'COMMA', 0, 'POINT')}"></td>
+            <td><strong th:text="${#numbers.formatDecimal(sal.totalSalary, 0, 'COMMA', 0, 'POINT')}"></strong></td>
+            <td>
+                <span class="badge bg-warning" th:if="${sal.status == 'PENDING'}">Chờ thanh toán</span>
+                <span class="badge bg-success" th:if="${sal.status == 'PAID'}">Đã thanh toán</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

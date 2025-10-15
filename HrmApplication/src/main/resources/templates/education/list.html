@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Trình độ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"><i class="fas fa-users-cog"></i> HRM System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+                <li class="nav-item"><a class="nav-link" href="/employees">Nhân viên</a></li>
+                <li class="nav-item"><a class="nav-link" href="/logout">Đăng xuất</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-graduation-cap text-success"></i> Quản lý Trình độ</h2>
+        <div>
+            <a th:href="@{/educations/new(employeeId=${employeeId})}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Thêm mới
+            </a>
+            <a href="/employees" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="alert alert-info" th:if="${employeeName}">
+        <i class="fas fa-user"></i> <strong>Nhân viên:</strong> <span th:text="${employeeName}"></span>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="fas fa-list"></i> Danh sách Trình độ</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-success">
+                    <tr>
+                        <th>STT</th>
+                        <th>Thành phần BT</th>
+                        <th>Trình độ VH</th>
+                        <th>Chuyên môn</th>
+                        <th>Ngoại ngữ</th>
+                        <th>Trình độ NN</th>
+                        <th>Bằng cấp</th>
+                        <th>Trường</th>
+                        <th>Năm TN</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="edu, iterStat : ${educations}">
+                        <td th:text="${iterStat.count}"></td>
+                        <td th:text="${edu.familyBackground}"></td>
+                        <td th:text="${edu.culturalLevel}"></td>
+                        <td th:text="${edu.specialization}"></td>
+                        <td th:text="${edu.foreignLanguage}"></td>
+                        <td>
+                            <span class="badge bg-info" th:text="${edu.languageLevel}"></span>
+                        </td>
+                        <td th:text="${edu.degree}"></td>
+                        <td th:text="${edu.university}"></td>
+                        <td th:text="${edu.graduationYear}"></td>
+                        <td>
+                            <a th:href="@{/educations/edit/{id}(id=${edu.id})}"
+                               class="btn btn-sm btn-warning" title="Sửa">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a th:href="@{/educations/delete/{id}(id=${edu.id})}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Bạn có chắc muốn xóa trình độ này?')"
+                               title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(educations)}">
+                        <td colspan="10" class="text-center text-muted">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>Chưa có thông tin trình độ</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

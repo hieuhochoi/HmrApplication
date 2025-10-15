@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Bảo hiểm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"><i class="fas fa-users-cog"></i> HRM System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+                <li class="nav-item"><a class="nav-link" href="/employees">Nhân viên</a></li>
+                <li class="nav-item"><a class="nav-link" href="/logout">Đăng xuất</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-shield-alt text-warning"></i> Quản lý Bảo hiểm</h2>
+        <div>
+            <a th:href="@{/insurances/new(employeeId=${employeeId})}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Thêm mới
+            </a>
+            <a href="/employees" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="alert alert-info" th:if="${employeeName}">
+        <i class="fas fa-user"></i> <strong>Nhân viên:</strong> <span th:text="${employeeName}"></span>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="fas fa-list"></i> Danh sách Bảo hiểm</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-warning">
+                    <tr>
+                        <th>STT</th>
+                        <th>Số bảo hiểm</th>
+                        <th>Loại BH</th>
+                        <th>Nơi cấp</th>
+                        <th>Ngày cấp</th>
+                        <th>Nơi đăng ký KCB</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="ins, iterStat : ${insurances}">
+                        <td th:text="${iterStat.count}"></td>
+                        <td>
+                            <strong th:text="${ins.insuranceNumber}"></strong>
+                        </td>
+                        <td>
+                                    <span class="badge bg-primary" th:if="${ins.insuranceType == 'BHXH'}">
+                                        <i class="fas fa-briefcase"></i> BHXH
+                                    </span>
+                            <span class="badge bg-success" th:if="${ins.insuranceType == 'BHYT'}">
+                                        <i class="fas fa-heartbeat"></i> BHYT
+                                    </span>
+                            <span class="badge bg-info" th:if="${ins.insuranceType == 'BHTN'}">
+                                        <i class="fas fa-user-shield"></i> BHTN
+                                    </span>
+                            <span class="badge bg-warning" th:if="${ins.insuranceType == 'BHTNLĐ'}">
+                                        <i class="fas fa-hard-hat"></i> BHTNLĐ
+                                    </span>
+                        </td>
+                        <td th:text="${ins.issuedPlace}"></td>
+                        <td th:text="${#temporals.format(ins.issuedDate, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${ins.medicalFacility}"></td>
+                        <td>
+                            <a th:href="@{/insurances/edit/{id}(id=${ins.id})}"
+                               class="btn btn-sm btn-warning" title="Sửa">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a th:href="@{/insurances/delete/{id}(id=${ins.id})}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Bạn có chắc muốn xóa bảo hiểm này?')"
+                               title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(insurances)}">
+                        <td colspan="7" class="text-center text-muted">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>Chưa có thông tin bảo hiểm</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông tin bổ sung -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-info-circle"></i> Thông tin về Bảo hiểm</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-briefcase"></i> Bảo hiểm Xã hội (BHXH)</h6>
+                            <p class="small">Đảm bảo quyền lợi về hưu trí, tử tuất, ốm đau, thai sản...</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-heartbeat"></i> Bảo hiểm Y tế (BHYT)</h6>
+                            <p class="small">Chi trả chi phí khám chữa bệnh tại các cơ sở y tế</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-user-shield"></i> Bảo hiểm Thất nghiệp (BHTN)</h6>
+                            <p class="small">Hỗ trợ khi mất việc làm, đào tạo nghề...</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-hard-hat"></i> Bảo hiểm Tai nạn Lao động (BHTNLĐ)</h6>
+                            <p class="small">Bảo vệ người lao động khi gặp tai nạn lao động</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

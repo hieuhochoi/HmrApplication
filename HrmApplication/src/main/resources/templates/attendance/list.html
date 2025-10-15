@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chấm công</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">HRM System</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-4">
+        <h2><i class="fas fa-clock"></i> Quản lý Chấm công</h2>
+        <a href="/attendances/new" class="btn btn-success"><i class="fas fa-plus"></i> Thêm mới</a>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Chọn nhân viên</label>
+                    <select name="employeeId" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        <option th:each="emp : ${employees}"
+                                th:value="${emp.id}"
+                                th:text="${emp.fullName}"></option>
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-hover">
+        <thead class="table-primary">
+        <tr>
+            <th>Nhân viên</th>
+            <th>Ngày</th>
+            <th>Ca</th>
+            <th>Giờ vào</th>
+            <th>Giờ ra</th>
+            <th>Giờ công</th>
+            <th>Tăng ca</th>
+            <th>Trạng thái</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="att : ${attendances}">
+            <td th:text="${att.employee.fullName}"></td>
+            <td th:text="${att.workDate}"></td>
+            <td th:text="${att.shift}"></td>
+            <td th:text="${att.checkIn}"></td>
+            <td th:text="${att.checkOut}"></td>
+            <td th:text="${att.workHours}"></td>
+            <td th:text="${att.overtimeHours}"></td>
+            <td>
+                <span class="badge bg-success" th:if="${att.status == 'PRESENT'}">Có mặt</span>
+                <span class="badge bg-warning" th:if="${att.status == 'LEAVE'}">Nghỉ phép</span>
+                <span class="badge bg-danger" th:if="${att.status == 'ABSENT'}">Vắng</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

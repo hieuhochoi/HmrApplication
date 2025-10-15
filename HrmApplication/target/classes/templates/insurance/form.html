@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin Bảo hiểm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"><i class="fas fa-users-cog"></i> HRM System</a>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+            <li class="nav-item"><a class="nav-link" href="/logout">Đăng xuất</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h4><i class="fas fa-shield-alt"></i> Thông tin Bảo hiểm</h4>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/insurances/save}" th:object="${insurance}" method="post">
+                <input type="hidden" th:field="*{id}">
+                <input type="hidden" th:field="*{employee.id}">
+
+                <!-- Thông tin bảo hiểm -->
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h5 class="border-bottom pb-2 text-warning">
+                            <i class="fas fa-shield-alt"></i> Thông tin Bảo hiểm
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-barcode"></i> Số bảo hiểm *
+                        </label>
+                        <input type="text" class="form-control" th:field="*{insuranceNumber}"
+                               placeholder="VD: 2001234567890" required>
+                        <small class="text-muted">Số sổ BHXH 10 chữ số</small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-tag"></i> Loại bảo hiểm *
+                        </label>
+                        <select class="form-select" th:field="*{insuranceType}" required>
+                            <option value="">-- Chọn loại --</option>
+                            <option value="BHXH">
+                                <i class="fas fa-briefcase"></i> Bảo hiểm xã hội (BHXH)
+                            </option>
+                            <option value="BHYT">
+                                <i class="fas fa-heartbeat"></i> Bảo hiểm y tế (BHYT)
+                            </option>
+                            <option value="BHTN">
+                                <i class="fas fa-user-shield"></i> Bảo hiểm thất nghiệp (BHTN)
+                            </option>
+                            <option value="BHTNLĐ">
+                                <i class="fas fa-hard-hat"></i> Bảo hiểm tai nạn lao động (BHTNLĐ)
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Thông tin cấp phát -->
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h5 class="border-bottom pb-2 text-warning">
+                            <i class="fas fa-file-alt"></i> Thông tin cấp phát
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-building"></i> Nơi cấp
+                        </label>
+                        <input type="text" class="form-control" th:field="*{issuedPlace}"
+                               placeholder="VD: BHXH Thành phố Hà Nội">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-calendar-alt"></i> Ngày cấp
+                        </label>
+                        <input type="date" class="form-control" th:field="*{issuedDate}">
+                    </div>
+                </div>
+
+                <!-- Nơi đăng ký khám chữa bệnh -->
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h5 class="border-bottom pb-2 text-warning">
+                            <i class="fas fa-hospital"></i> Nơi khám chữa bệnh
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-hospital-user"></i> Nơi đăng ký khám chữa bệnh ban đầu
+                    </label>
+                    <input type="text" class="form-control" th:field="*{medicalFacility}"
+                           placeholder="VD: Bệnh viện Bạch Mai, Bệnh viện E...">
+                    <small class="text-muted">
+                        Cơ sở y tế nơi người tham gia BHYT đăng ký khám chữa bệnh ban đầu
+                    </small>
+                </div>
+
+                <!-- Thông tin quan trọng -->
+                <div class="alert alert-warning">
+                    <h6><i class="fas fa-exclamation-triangle"></i> Lưu ý quan trọng:</h6>
+                    <ul class="mb-0">
+                        <li><strong>BHXH:</strong> Bắt buộc với người lao động có hợp đồng lao động từ 1 tháng trở lên</li>
+                        <li><strong>BHYT:</strong> Bắt buộc với mọi người lao động đang làm việc</li>
+                        <li><strong>BHTN:</strong> Bắt buộc với hợp đồng lao động từ 3 tháng trở lên</li>
+                        <li><strong>Mức đóng:</strong>
+                            <ul>
+                                <li>BHXH: 17.5% (DN: 14%, NLĐ: 8%)</li>
+                                <li>BHYT: 4.5% (DN: 3%, NLĐ: 1.5%)</li>
+                                <li>BHTN: 2% (DN: 1%, NLĐ: 1%)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Hướng dẫn -->
+                <div class="card border-info mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0"><i class="fas fa-info-circle"></i> Hướng dẫn điền thông tin</h6>
+                    </div>
+                    <div class="card-body">
+                        <ol class="mb-0">
+                            <li><strong>Số bảo hiểm:</strong> Là số sổ BHXH 10 chữ số được cấp khi tham gia lần đầu</li>
+                            <li><strong>Nơi cấp:</strong> Tên BHXH tỉnh/thành phố cấp sổ BHXH</li>
+                            <li><strong>Ngày cấp:</strong> Ngày được ghi trên sổ BHXH</li>
+                            <li><strong>Nơi KCB:</strong> Bệnh viện/phòng khám đăng ký trên thẻ BHYT</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a th:href="@{/insurances/employee/{id}(id=${insurance.employee?.id})}"
+                       class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Hủy
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

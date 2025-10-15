@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Nhân Sự</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-users-cog"></i> HRM System - Smart Solution
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/employees">Nhân viên</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/departments">Phòng ban</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/positions">Chức vụ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/attendances">Chấm công</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/salaries">Lương</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-building"></i> HỆ THỐNG QUẢN LÝ NHÂN SỰ
+            </h1>
+            <p class="lead">Giải pháp quản lý nhân sự toàn diện cho doanh nghiệp</p>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm module-card">
+                <div class="card-body">
+                    <i class="fas fa-user-tie fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Quản lý Nhân viên</h5>
+                    <p class="card-text">Thông tin cá nhân, hồ sơ nhân viên</p>
+                    <a href="/employees" class="btn btn-primary">Truy cập</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm module-card">
+                <div class="card-body">
+                    <i class="fas fa-graduation-cap fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Trình độ</h5>
+                    <p class="card-text">Văn hóa, chuyên môn, ngoại ngữ</p>
+                    <a href="/employees" class="btn btn-success">Truy cập</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm module-card">
+                <div class="card-body">
+                    <i class="fas fa-building fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Phòng ban</h5>
+                    <p class="card-text">Cơ cấu tổ chức công ty</p>
+                    <a href="/departments" class="btn btn-info">Truy cập</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm module-card">
+                <div class="card-body">
+                    <i class="fas fa-shield-alt fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Bảo hiểm</h5>
+                    <p class="card-text">Thông tin bảo hiểm nhân viên</p>
+                    <a href="/employees" class="btn btn-warning">Truy cập</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm module-card">
+                <div class="card-body">
+                    <i class="fas fa-crown fa-3x text-danger mb-3"></i>
+                    <h5 class="card-title">Chức vụ</h5>
+                    <p class="card-text">Danh mục chức vụ</p>
+                    <a href="/positions" class="btn btn-danger">Truy cập</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm module-card">
+                <div class="card-body">
+                    <i class="fas fa-file-contract fa-3x text-secondary mb-3"></i>
+                    <h5 class="card-title">Hợp đồng</h5>
+                    <p class="card-text">Hợp đồng lao động</p>
+                    <a href="/employees" class="btn btn-secondary">Truy cập</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm module-card">
+                <div class="card-body">
+                    <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Chấm công</h5>
+                    <p class="card-text">Quản lý chấm công, ca làm việc</p>
+                    <a href="/attendances" class="btn btn-primary">Truy cập</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm module-card">
+                <div class="card-body">
+                    <i class="fas fa-money-bill-wave fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Lương</h5>
+                    <p class="card-text">Quản lý lương, thưởng</p>
+                    <a href="/salaries" class="btn btn-success">Truy cập</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

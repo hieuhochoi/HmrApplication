@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết Hợp đồng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">HRM System</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-secondary text-white">
+            <h4><i class="fas fa-file-alt"></i> Chi tiết Hợp đồng lao động</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <strong>Nhân viên:</strong>
+                    <p class="text-primary" th:text="${contract.employee.fullName}"></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Số hợp đồng:</strong>
+                    <p th:text="${contract.contractNumber}"></p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <strong>Loại hợp đồng:</strong>
+                    <p><span class="badge bg-info" th:text="${contract.contractType}"></span></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Trạng thái:</strong>
+                    <p>
+                        <span class="badge bg-success" th:if="${contract.status == 'ACTIVE'}">Hiệu lực</span>
+                        <span class="badge bg-warning" th:if="${contract.status == 'EXPIRED'}">Hết hạn</span>
+                        <span class="badge bg-danger" th:if="${contract.status == 'TERMINATED'}">Chấm dứt</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <strong>Ngày ký:</strong>
+                    <p th:text="${contract.signedDate}"></p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <strong>Ngày bắt đầu:</strong>
+                    <p th:text="${contract.startDate}"></p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <strong>Ngày kết thúc:</strong>
+                    <p th:text="${contract.endDate}"></p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <strong>Thời hạn:</strong>
+                    <p><span th:text="${contract.duration}"></span> tháng</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Mức lương:</strong>
+                    <p class="text-success">
+                        <strong th:text="${#numbers.formatDecimal(contract.salary, 0, 'COMMA', 0, 'POINT')}"></strong> VNĐ
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a th:href="@{/contracts/edit/{id}(id=${contract.id})}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Chỉnh sửa
+                </a>
+                <a th:href="@{/contracts/employee/{id}(id=${contract.employee.id})}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách Chức vụ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">HRM System</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-4">
+        <h2><i class="fas fa-crown"></i> Danh sách Chức vụ</h2>
+        <a href="/positions/new" class="btn btn-success"><i class="fas fa-plus"></i> Thêm mới</a>
+    </div>
+
+    <table class="table table-hover">
+        <thead class="table-danger">
+        <tr>
+            <th>Mã CV</th>
+            <th>Tên chức vụ</th>
+            <th>Lương cơ bản</th>
+            <th>Mô tả</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="pos : ${positions}">
+            <td th:text="${pos.positionCode}"></td>
+            <td th:text="${pos.positionName}"></td>
+            <td th:text="${#numbers.formatDecimal(pos.baseSalary, 0, 'COMMA', 0, 'POINT')}"></td>
+            <td th:text="${pos.description}"></td>
+            <td>
+                <a th:href="@{/positions/edit/{id}(id=${pos.id})}" class="btn btn-sm btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a th:href="@{/positions/delete/{id}(id=${pos.id})}"
+                   class="btn btn-sm btn-danger"
+                   onclick="return confirm('Xóa chức vụ?')">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
