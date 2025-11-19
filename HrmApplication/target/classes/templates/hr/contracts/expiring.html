@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hợp đồng sắp hết hạn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">HRM System - HR</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/hr/contracts">Danh sách</a>
+                <a class="nav-link" href="/logout">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <h2 class="mb-4"><i class="fas fa-exclamation-triangle"></i> Hợp đồng sắp hết hạn</h2>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <form method="get" action="/hr/contracts/expiring">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Số ngày:</label>
+                            <select name="days" class="form-select" onchange="this.form.submit()">
+                                <option value="7" th:selected="${days == 7}">7 ngày</option>
+                                <option value="15" th:selected="${days == 15}">15 ngày</option>
+                                <option value="30" th:selected="${days == 30}">30 ngày</option>
+                                <option value="60" th:selected="${days == 60}">60 ngày</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Số hợp đồng</th>
+                            <th>Nhân viên</th>
+                            <th>Loại hợp đồng</th>
+                            <th>Ngày kết thúc</th>
+                            <th>Số ngày còn lại</th>
+                            <th>Lương</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${expiringContracts == null or expiringContracts.isEmpty()}">
+                            <td colspan="7" class="text-center text-muted">Không có hợp đồng nào sắp hết hạn</td>
+                        </tr>
+                        <tr th:each="contract : ${expiringContracts}">
+                            <td th:text="${contract.contractNumber}">-</td>
+                            <td th:text="${contract.employee.fullName}">-</td>
+                            <td th:text="${contract.contractType}">-</td>
+                            <td th:text="${#temporals.format(contract.endDate, 'dd/MM/yyyy')}">-</td>
+                            <td>
+                                <span class="badge bg-warning" th:text="${#temporals.dayOfMonth(contract.endDate) - #temporals.dayOfMonth(#dates.createNow())} + ' ngày'">-</span>
+                            </td>
+                            <td th:text="${contract.salary != null ? #numbers.formatDecimal(contract.salary, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : 'N/A'}">-</td>
+                            <td>
+                                <a th:href="@{/contracts/{id}(id=${contract.id})}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> Xem
+                                </a>
+                                <a th:href="@{/contracts/form(employeeId=${contract.employee.id})}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-plus"></i> Gia hạn
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

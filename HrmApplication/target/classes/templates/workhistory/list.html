@@ -42,6 +42,18 @@
         <i class="fas fa-user"></i> <strong>Nhân viên:</strong> <span th:text="${employeeName}"></span>
     </div>
 
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${successMessage}">Thành công.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${errorMessage}">Có lỗi xảy ra.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <div class="card shadow-sm">
         <div class="card-header bg-success text-white">
             <h5 class="mb-0"><i class="fas fa-list"></i> Lịch sử Công tác</h5>
@@ -68,7 +80,7 @@
                         <td>
                             <div>
                                 <i class="fas fa-calendar-check text-success"></i>
-                                <strong th:text="${#temporals.format(wh.startDate, 'dd/MM/yyyy')}"></strong>
+                                <strong th:text="${wh.startDate != null ? #temporals.format(wh.startDate, 'dd/MM/yyyy') : '—'}"></strong>
                             </div>
                             <div class="text-muted small">
                                 <i class="fas fa-arrow-down"></i>
@@ -80,14 +92,12 @@
                             </div>
                         </td>
                         <td>
-                                    <span class="badge bg-info" th:if="${wh.department}"
-                                          th:text="${wh.department.departmentName}"></span>
-                            <span class="text-muted" th:unless="${wh.department}">-</span>
+                            <span class="badge bg-info" th:if="${wh.departmentName}" th:text="${wh.departmentName}"></span>
+                            <span class="text-muted" th:unless="${wh.departmentName}">-</span>
                         </td>
                         <td>
-                                    <span class="badge bg-primary" th:if="${wh.position}"
-                                          th:text="${wh.position.positionName}"></span>
-                            <span class="text-muted" th:unless="${wh.position}">-</span>
+                            <span class="badge bg-primary" th:if="${wh.positionName}" th:text="${wh.positionName}"></span>
+           	                <span class="text-muted" th:unless="${wh.positionName}">-</span>
                         </td>
                         <td>
                                     <span class="badge bg-secondary" th:if="${wh.leaveType}"
@@ -109,7 +119,7 @@
                             <span class="text-muted" th:unless="${wh.disciplineType}">-</span>
                         </td>
                         <td>
-                            <span class="small" th:text="${wh.note}"></span>
+                            <span class="small" th:text="${wh.note != null ? wh.note : '-'}"></span>
                         </td>
                         <td>
                             <a th:href="@{/workhistories/edit/{id}(id=${wh.id})}"
@@ -154,12 +164,12 @@
                             <div class="card border-success">
                                 <div class="card-body">
                                     <h6 class="card-title">
-                                        <span class="badge bg-info" th:text="${wh.department?.departmentName}"></span>
-                                        <span class="badge bg-primary" th:text="${wh.position?.positionName}"></span>
+                                        <span class="badge bg-info" th:text="${wh.departmentName != null ? wh.departmentName : '—'}"></span>
+                                        <span class="badge bg-primary" th:text="${wh.positionName != null ? wh.positionName : '—'}"></span>
                                     </h6>
                                     <p class="card-text text-muted small mb-1">
                                         <i class="fas fa-calendar"></i>
-                                        <span th:text="${#temporals.format(wh.startDate, 'dd/MM/yyyy')}"></span>
+                                        <span th:text="${wh.startDate != null ? #temporals.format(wh.startDate, 'dd/MM/yyyy') : '—'}"></span>
                                         -
                                         <span th:text="${wh.endDate != null ? #temporals.format(wh.endDate, 'dd/MM/yyyy') : 'Hiện tại'}"></span>
                                     </p>

@@ -25,9 +25,20 @@
             <h4><i class="fas fa-history"></i> Quá trình Công tác</h4>
         </div>
         <div class="card-body">
+            <div th:if="${employeeName}" class="alert alert-info">
+                <i class="fas fa-user me-2"></i>
+                <strong>Nhân viên:</strong> <span th:text="${employeeName}"></span>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span th:text="${errorMessage}">Có lỗi xảy ra.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
             <form th:action="@{/workhistories/save}" th:object="${workHistory}" method="post">
                 <input type="hidden" th:field="*{id}">
-                <input type="hidden" th:field="*{employee.id}">
+                <input type="hidden" th:field="*{employeeId}">
 
                 <!-- Thông tin vị trí công tác -->
                 <div class="row">
@@ -43,24 +54,30 @@
                         <label class="form-label">
                             <i class="fas fa-building"></i> Phòng ban *
                         </label>
-                        <select class="form-select" th:field="*{department.id}" required>
+                        <select class="form-select"
+                                th:field="*{departmentId}"
+                                th:classappend="${#fields.hasErrors('departmentId')} ? ' is-invalid' : ''">
                             <option value="">-- Chọn phòng ban --</option>
                             <option th:each="dept : ${departments}"
                                     th:value="${dept.id}"
                                     th:text="${dept.departmentName}"></option>
                         </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('departmentId')}" th:errors="*{departmentId}"></div>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">
                             <i class="fas fa-crown"></i> Chức vụ *
                         </label>
-                        <select class="form-select" th:field="*{position.id}" required>
+                        <select class="form-select"
+                                th:field="*{positionId}"
+                                th:classappend="${#fields.hasErrors('positionId')} ? ' is-invalid' : ''">
                             <option value="">-- Chọn chức vụ --</option>
                             <option th:each="pos : ${positions}"
                                     th:value="${pos.id}"
                                     th:text="${pos.positionName}"></option>
                         </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('positionId')}" th:errors="*{positionId}"></div>
                     </div>
                 </div>
 
@@ -78,14 +95,21 @@
                         <label class="form-label">
                             <i class="fas fa-calendar-check"></i> Ngày bắt đầu *
                         </label>
-                        <input type="date" class="form-control" th:field="*{startDate}" required>
+                        <input type="date" class="form-control"
+                               th:field="*{startDate}"
+                               th:classappend="${#fields.hasErrors('startDate')} ? ' is-invalid' : ''"
+                               required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}"></div>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">
                             <i class="fas fa-calendar-times"></i> Ngày kết thúc
                         </label>
-                        <input type="date" class="form-control" th:field="*{endDate}">
+                        <input type="date" class="form-control"
+                               th:field="*{endDate}"
+                               th:classappend="${#fields.hasErrors('endDate')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}"></div>
                         <small class="text-muted">Để trống nếu còn đang làm việc</small>
                     </div>
                 </div>
@@ -104,7 +128,10 @@
                         <label class="form-label">
                             <i class="fas fa-bed"></i> Loại nghỉ phép
                         </label>
-                        <select class="form-select" th:field="*{leaveType}">
+                        <select class="form-select"
+                                th:field="*{leaveType}"
+                                th:classappend="${#fields.hasErrors('leaveType')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('leaveType')}" th:errors="*{leaveType}"></div>
                             <option value="">-- Không nghỉ --</option>
                             <option value="Nghỉ phép năm">Nghỉ phép năm</option>
                             <option value="Nghỉ ốm">Nghỉ ốm</option>
@@ -136,7 +163,10 @@
                         <label class="form-label">
                             <i class="fas fa-medal"></i> Khen thưởng
                         </label>
-                        <select class="form-select" th:field="*{rewardType}">
+                        <select class="form-select"
+                                th:field="*{rewardType}"
+                                th:classappend="${#fields.hasErrors('rewardType')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('rewardType')}" th:errors="*{rewardType}"></div>
                             <option value="">-- Không có --</option>
                             <option value="Giấy khen">Giấy khen</option>
                             <option value="Bằng khen">Bằng khen</option>
@@ -158,7 +188,10 @@
                         <label class="form-label">
                             <i class="fas fa-exclamation-triangle"></i> Kỷ luật
                         </label>
-                        <select class="form-select" th:field="*{disciplineType}">
+                        <select class="form-select"
+                                th:field="*{disciplineType}"
+                                th:classappend="${#fields.hasErrors('disciplineType')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('disciplineType')}" th:errors="*{disciplineType}"></div>
                             <option value="">-- Không có --</option>
                             <option value="Khiển trách">Khiển trách</option>
                             <option value="Cảnh cáo">Cảnh cáo</option>
@@ -182,8 +215,12 @@
                     <label class="form-label">
                         <i class="fas fa-edit"></i> Ghi chú chi tiết
                     </label>
-                    <textarea class="form-control" th:field="*{note}" rows="4"
+                    <textarea class="form-control"
+                              th:field="*{note}"
+                              th:classappend="${#fields.hasErrors('note')} ? ' is-invalid' : ''"
+                              rows="4"
                               placeholder="Mô tả chi tiết về quá trình công tác, thuyên chuyển, thay đổi..."></textarea>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('note')}" th:errors="*{note}"></div>
                     <small class="text-muted">
                         VD: Thuyên chuyển từ phòng A sang phòng B, thăng chức, điều động...
                     </small>
@@ -236,7 +273,7 @@
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save"></i> Lưu lại
                     </button>
-                    <a th:href="@{/workhistories/employee/{id}(id=${workHistory.employee?.id})}"
+                    <a th:href="@{/workhistories/employee/{id}(id=${workHistory.employeeId})}"
                        class="btn btn-secondary">
                         <i class="fas fa-times"></i> Hủy
                     </a>

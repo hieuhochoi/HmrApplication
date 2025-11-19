@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Trưởng phòng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-info">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-user-tie"></i> HRM System - Trưởng phòng
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manager/leave-requests">Duyệt nghỉ phép</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manager/overtime-requests">Duyệt tăng ca</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manager/reports">Báo cáo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manager/attendance-adjustments">Điều chỉnh công</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard - Trưởng phòng
+                </h2>
+                <p class="text-muted">Xin chào, <strong th:text="${fullName}">Manager</strong></p>
+                <p th:if="${department}" class="text-muted">
+                    Phòng ban: <strong th:text="${department.departmentName}">-</strong>
+                </p>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Thống kê phòng ban -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <h6 class="card-title">Tổng nhân viên phòng ban</h6>
+                        <h2 th:text="${departmentEmployees ?: 0}">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <h6 class="card-title">Yêu cầu chờ duyệt</h6>
+                        <h2>0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu chức năng -->
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0"><i class="fas fa-calendar-times"></i> Duyệt nghỉ phép</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Duyệt các yêu cầu nghỉ phép của nhân viên</p>
+                        <a href="/manager/leave-requests" class="btn btn-warning">Xem yêu cầu</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-clock"></i> Duyệt tăng ca</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Duyệt các yêu cầu tăng ca của nhân viên</p>
+                        <a href="/manager/overtime-requests" class="btn btn-info">Xem yêu cầu</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Báo cáo phòng ban</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Xem báo cáo thống kê phòng ban</p>
+                        <a href="/manager/reports" class="btn btn-success">Xem báo cáo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-edit"></i> Duyệt điều chỉnh công</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Duyệt các yêu cầu điều chỉnh công của nhân viên</p>
+                        <a href="/manager/attendance-adjustments" class="btn btn-secondary">Xem yêu cầu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

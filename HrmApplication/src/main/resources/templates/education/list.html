@@ -42,6 +42,18 @@
         <i class="fas fa-user"></i> <strong>Nhân viên:</strong> <span th:text="${employeeName}"></span>
     </div>
 
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${successMessage}">Thành công.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${errorMessage}">Có lỗi xảy ra.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <div class="card shadow-sm">
         <div class="card-header bg-success text-white">
             <h5 class="mb-0"><i class="fas fa-list"></i> Danh sách Trình độ</h5>
@@ -66,16 +78,16 @@
                     <tbody>
                     <tr th:each="edu, iterStat : ${educations}">
                         <td th:text="${iterStat.count}"></td>
-                        <td th:text="${edu.familyBackground}"></td>
-                        <td th:text="${edu.culturalLevel}"></td>
-                        <td th:text="${edu.specialization}"></td>
-                        <td th:text="${edu.foreignLanguage}"></td>
+                        <td th:text="${edu.familyBackground != null ? edu.familyBackground : '—'}"></td>
+                        <td th:text="${edu.culturalLevel != null ? edu.culturalLevel : '—'}"></td>
+                        <td th:text="${edu.specialization != null ? edu.specialization : '—'}"></td>
+                        <td th:text="${edu.foreignLanguage != null ? edu.foreignLanguage : '—'}"></td>
                         <td>
-                            <span class="badge bg-info" th:text="${edu.languageLevel}"></span>
+                            <span class="badge bg-info" th:text="${edu.languageLevel != null ? edu.languageLevel : '—'}"></span>
                         </td>
-                        <td th:text="${edu.degree}"></td>
-                        <td th:text="${edu.university}"></td>
-                        <td th:text="${edu.graduationYear}"></td>
+                        <td th:text="${edu.degree != null ? edu.degree : '—'}"></td>
+                        <td th:text="${edu.university != null ? edu.university : '—'}"></td>
+                        <td th:text="${edu.graduationYear != null ? edu.graduationYear : '—'}"></td>
                         <td>
                             <a th:href="@{/educations/edit/{id}(id=${edu.id})}"
                                class="btn btn-sm btn-warning" title="Sửa">

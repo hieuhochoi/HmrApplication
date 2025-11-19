@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Backup & Restore</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">HRM System - Admin</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link" href="/logout">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <h2 class="mb-4"><i class="fas fa-database"></i> Backup & Restore Dữ liệu</h2>
+
+        <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${message}" class="alert alert-info alert-dismissible fade show">
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-download"></i> Tạo Backup</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Xuất toàn bộ dữ liệu hệ thống ra file SQL để backup.</p>
+                        <p class="text-muted">Chức năng này sẽ export toàn bộ dữ liệu từ database ra file SQL.</p>
+                        <button class="btn btn-primary" onclick="alert('Chức năng đang được phát triển. Sẽ hỗ trợ export toàn bộ dữ liệu ra file SQL.')">
+                            <i class="fas fa-download"></i> Tạo Backup
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0"><i class="fas fa-upload"></i> Restore</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Khôi phục dữ liệu từ file backup.</p>
+                        <p class="text-muted"><strong>Lưu ý:</strong> Thao tác này sẽ ghi đè dữ liệu hiện tại!</p>
+                        <button class="btn btn-warning" onclick="alert('Chức năng đang được phát triển.')">
+                            <i class="fas fa-upload"></i> Restore từ file
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Danh sách Backup</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Chức năng xem danh sách backup files đang được phát triển.</p>
+                <a href="/admin/backup/list" class="btn btn-secondary">
+                    <i class="fas fa-list"></i> Xem danh sách backup
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

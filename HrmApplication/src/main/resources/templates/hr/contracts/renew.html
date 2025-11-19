@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gia hạn hợp đồng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">HRM System - HR</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/hr/contracts">Danh sách hợp đồng</a>
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link" href="/logout">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="mb-4"><i class="fas fa-redo"></i> Gia hạn hợp đồng</h2>
+
+        <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${contract != null}" class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Thông tin hợp đồng hiện tại</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Nhân viên:</strong> <span th:text="${contract.employee.fullName}">-</span></p>
+                        <p><strong>Số hợp đồng:</strong> <span th:text="${contract.contractNumber}">-</span></p>
+                        <p><strong>Loại hợp đồng:</strong> <span th:text="${contract.contractType}">-</span></p>
+                        <p><strong>Ngày ký:</strong> 
+                            <span th:text="${contract.signedDate != null ? #temporals.format(contract.signedDate, 'dd/MM/yyyy') : 'N/A'}">-</span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Ngày bắt đầu:</strong> 
+                            <span th:text="${contract.startDate != null ? #temporals.format(contract.startDate, 'dd/MM/yyyy') : 'N/A'}">-</span>
+                        </p>
+                        <p><strong>Ngày kết thúc:</strong> 
+                            <span th:text="${contract.endDate != null ? #temporals.format(contract.endDate, 'dd/MM/yyyy') : 'N/A'}">-</span>
+                        </p>
+                        <p><strong>Thời hạn:</strong> <span th:text="${contract.duration}">-</span> tháng</p>
+                        <p><strong>Lương:</strong> 
+                            <span th:text="${contract.salary != null ? #numbers.formatDecimal(contract.salary, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : 'N/A'}">-</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Thông tin gia hạn</h5>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/hr/contracts/{id}/renew(id=${contract.id})}" method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Thời hạn gia hạn (tháng) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="duration" min="1" max="120" required
+                                   th:value="${contract.duration}">
+                            <div class="form-text">Nhập số tháng muốn gia hạn</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Lương mới (VNĐ)</label>
+                            <input type="number" class="form-control" name="newSalary" min="0" step="1000"
+                                   th:value="${contract.salary}">
+                            <div class="form-text">Để trống nếu giữ nguyên lương cũ</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Lý do gia hạn <span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="reason" rows="3" required 
+                                  placeholder="Vui lòng nêu rõ lý do gia hạn hợp đồng..."></textarea>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> <strong>Lưu ý:</strong> 
+                        Hợp đồng cũ sẽ được đóng và một hợp đồng mới sẽ được tạo với thông tin gia hạn.
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/hr/contracts" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Xác nhận gia hạn
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

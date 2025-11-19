@@ -33,13 +33,26 @@
         </a>
     </div>
 
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${successMessage}">Thành công.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${errorMessage}">Có lỗi xảy ra.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <!-- Search box -->
     <div class="card shadow-sm mb-3">
         <div class="card-body">
             <form method="get" action="/employees">
                 <div class="input-group">
                     <input type="text" class="form-control" name="keyword"
-                           placeholder="Tìm kiếm theo tên nhân viên...">
+                           placeholder="Tìm kiếm theo tên nhân viên..."
+                           th:value="${keyword}">
                     <button class="btn btn-primary" type="submit">
                         <i class="fas fa-search"></i> Tìm kiếm
                     </button>

@@ -19,6 +19,18 @@
         <a href="/salaries/new" class="btn btn-success"><i class="fas fa-plus"></i> Thêm mới</a>
     </div>
 
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${successMessage}">Thành công.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${errorMessage}">Có lỗi xảy ra.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <div class="card mb-3">
         <div class="card-body">
             <form method="get" class="row g-3">
@@ -28,12 +40,13 @@
                         <option value="">-- Chọn tháng --</option>
                         <option th:each="i : ${#numbers.sequence(1, 12)}"
                                 th:value="${i}"
-                                th:text="${i}"></option>
+                                th:text="${i}"
+                                th:selected="${selectedMonth != null and selectedMonth == i}"></option>
                     </select>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Năm</label>
-                    <input type="number" name="year" class="form-control" value="2025">
+                    <input type="number" name="year" class="form-control" th:value="${selectedYear}">
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary">
@@ -56,25 +69,44 @@
             <th>Ứng lương</th>
             <th>Tổng lương</th>
             <th>Trạng thái</th>
+            <th>Thao tác</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="sal : ${salaries}">
-            <td th:text="${sal.employee.fullName}"></td>
+            <td th:text="${sal.employeeName}"></td>
             <td th:text="${sal.month + '/' + sal.year}"></td>
-            <td th:text="${#numbers.formatDecimal(sal.baseSalary, 0, 'COMMA', 0, 'POINT')}"></td>
-            <td th:text="${#numbers.formatDecimal(sal.allowance, 0, 'COMMA', 0, 'POINT')}"></td>
-            <td th:text="${#numbers.formatDecimal(sal.bonus, 0, 'COMMA', 0, 'POINT')}"></td>
-            <td th:text="${#numbers.formatDecimal(sal.overtime, 0, 'COMMA', 0, 'POINT')}"></td>
-            <td th:text="${#numbers.formatDecimal(sal.advance, 0, 'COMMA', 0, 'POINT')}"></td>
-            <td><strong th:text="${#numbers.formatDecimal(sal.totalSalary, 0, 'COMMA', 0, 'POINT')}"></strong></td>
+            <td th:text="${sal.baseSalary != null ? #numbers.formatDecimal(sal.baseSalary, 0, 'COMMA', 0, 'POINT') : '0'}"></td>
+            <td th:text="${sal.allowance != null ? #numbers.formatDecimal(sal.allowance, 0, 'COMMA', 0, 'POINT') : '0'}"></td>
+            <td th:text="${sal.bonus != null ? #numbers.formatDecimal(sal.bonus, 0, 'COMMA', 0, 'POINT') : '0'}"></td>
+            <td th:text="${sal.overtime != null ? #numbers.formatDecimal(sal.overtime, 0, 'COMMA', 0, 'POINT') : '0'}"></td>
+            <td th:text="${sal.advance != null ? #numbers.formatDecimal(sal.advance, 0, 'COMMA', 0, 'POINT') : '0'}"></td>
+            <td><strong th:text="${sal.totalSalary != null ? #numbers.formatDecimal(sal.totalSalary, 0, 'COMMA', 0, 'POINT') : '0'}"></strong></td>
             <td>
                 <span class="badge bg-warning" th:if="${sal.status == 'PENDING'}">Chờ thanh toán</span>
                 <span class="badge bg-success" th:if="${sal.status == 'PAID'}">Đã thanh toán</span>
+                <span class="badge bg-secondary" th:if="${sal.status == 'CANCELLED'}">Đã hủy</span>
+            </td>
+            <td>
+                <a th:href="@{/salaries/edit/{id}(id=${sal.id})}" class="btn btn-sm btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a th:href="@{/salaries/delete/{id}(id=${sal.id})}"
+                   class="btn btn-sm btn-danger"
+                   onclick="return confirm('Bạn có chắc muốn xóa bảng lương này?')">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(salaries)}">
+            <td colspan="10" class="text-center text-muted">
+                <i class="fas fa-inbox fa-3x mb-3"></i>
+                <p>Chưa có dữ liệu lương</p>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

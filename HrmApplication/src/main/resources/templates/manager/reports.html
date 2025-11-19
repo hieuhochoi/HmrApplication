@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Báo cáo phòng ban</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-info">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">HRM System - Trưởng phòng</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link" href="/logout">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="mb-4"><i class="fas fa-chart-bar"></i> Báo cáo phòng ban</h2>
+
+        <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${department != null}">
+            <!-- Filter by date range -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <form method="get" action="/manager/reports">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">Từ ngày:</label>
+                                <input type="date" name="startDate" class="form-control" th:value="${startDate}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Đến ngày:</label>
+                                <input type="date" name="endDate" class="form-control" th:value="${endDate}">
+                            </div>
+                            <div class="col-md-2 align-self-end">
+                                <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                            </div>
+                            <div class="col-md-2 align-self-end">
+                                <a href="/manager/reports" class="btn btn-secondary w-100">Xóa lọc</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <h6 class="card-title">Tổng nhân viên</h6>
+                            <h2 th:text="${totalEmployees}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h6 class="card-title">Đang làm việc</h6>
+                            <h2 th:text="${activeEmployees}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body">
+                            <h6 class="card-title">Đi muộn</h6>
+                            <h2 th:text="${lateCount ?: 0}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-danger">
+                        <div class="card-body">
+                            <h6 class="card-title">Vắng mặt</h6>
+                            <h2 th:text="${absentCount ?: 0}">0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biểu đồ thống kê -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Thống kê chấm công</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="attendanceChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Thống kê theo ngày (7 ngày gần nhất)</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="dailyChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Danh sách nhân viên trong phòng ban</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Họ tên</th>
+                                <th>Chức vụ</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${subordinates == null or subordinates.isEmpty()}">
+                                <td colspan="5" class="text-center text-muted">Không có nhân viên nào</td>
+                            </tr>
+                            <tr th:each="emp : ${subordinates}">
+                                <td th:text="${emp.fullName}">-</td>
+                                <td th:text="${emp.currentPosition?.positionName ?: 'N/A'}">-</td>
+                                <td th:text="${emp.email}">-</td>
+                                <td th:text="${emp.phone}">-</td>
+                                <td>
+                                    <span th:if="${emp.status == 'ACTIVE'}" class="badge bg-success">Đang làm việc</span>
+                                    <span th:if="${emp.status == 'INACTIVE'}" class="badge bg-warning">Tạm nghỉ</span>
+                                    <span th:if="${emp.status == 'RESIGNED'}" class="badge bg-danger">Đã nghỉ việc</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script th:inline="javascript">
+        // Biểu đồ thống kê chấm công
+        const attendanceCtx = document.getElementById('attendanceChart');
+        if (attendanceCtx) {
+            new Chart(attendanceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Có mặt', 'Đi muộn', 'Vắng mặt'],
+                    datasets: [{
+                        data: [
+                            /*[[${presentCount ?: 0}]]*/ 0,
+                            /*[[${lateCount ?: 0}]]*/ 0,
+                            /*[[${absentCount ?: 0}]]*/ 0
+                        ],
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(220, 53, 69, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(220, 53, 69, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Biểu đồ thống kê theo ngày
+        const dailyCtx = document.getElementById('dailyChart');
+        if (dailyCtx) {
+            const dailyStats = /*[[${dailyStats}]]*/ {};
+            const dates = Object.keys(dailyStats).sort();
+            const values = dates.map(date => dailyStats[date] || 0);
+            
+            // Format dates for display
+            const formattedDates = dates.map(date => {
+                const d = new Date(date);
+                return (d.getDate()) + '/' + (d.getMonth() + 1);
+            });
+
+            new Chart(dailyCtx, {
+                type: 'bar',
+                data: {
+                    labels: formattedDates,
+                    datasets: [{
+                        label: 'Số lần đi muộn/vắng mặt',
+                        data: values,
+                        backgroundColor: 'rgba(220, 53, 69, 0.6)',
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+

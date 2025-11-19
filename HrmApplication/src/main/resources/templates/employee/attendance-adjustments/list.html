@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Yêu cầu điều chỉnh công</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">HRM System</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/employee/attendances">Bảng công</a>
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link" href="/logout">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-edit"></i> Yêu cầu điều chỉnh công của tôi</h2>
+            <a href="/employee/attendances" class="btn btn-primary">
+                <i class="fas fa-calendar-check"></i> Xem bảng công
+            </a>
+        </div>
+
+        <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ngày yêu cầu</th>
+                            <th>Ngày làm việc</th>
+                            <th>Giờ vào (cũ → mới)</th>
+                            <th>Giờ ra (cũ → mới)</th>
+                            <th>Trạng thái (cũ → mới)</th>
+                            <th>Lý do</th>
+                            <th>Trạng thái</th>
+                            <th>Người duyệt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${adjustmentRequests == null or adjustmentRequests.isEmpty()}">
+                            <td colspan="8" class="text-center text-muted">Chưa có yêu cầu điều chỉnh công nào</td>
+                        </tr>
+                        <tr th:each="request : ${adjustmentRequests}">
+                            <td th:text="${request.requestDate != null ? #temporals.format(request.requestDate, 'dd/MM/yyyy') : 'N/A'}">-</td>
+                            <td th:text="${request.attendance.workDate != null ? #temporals.format(request.attendance.workDate, 'dd/MM/yyyy') : 'N/A'}">-</td>
+                            <td>
+                                <span th:text="${request.oldCheckIn ?: 'N/A'}">-</span>
+                                <span th:if="${request.newCheckIn != null and !request.newCheckIn.isEmpty()}">
+                                    → <span th:text="${request.newCheckIn}">-</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span th:text="${request.oldCheckOut ?: 'N/A'}">-</span>
+                                <span th:if="${request.newCheckOut != null and !request.newCheckOut.isEmpty()}">
+                                    → <span th:text="${request.newCheckOut}">-</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span th:text="${request.oldStatus ?: 'N/A'}">-</span>
+                                <span th:if="${request.newStatus != null and !request.newStatus.isEmpty()}">
+                                    → <span th:text="${request.newStatus}">-</span>
+                                </span>
+                            </td>
+                            <td th:text="${request.reason}">-</td>
+                            <td>
+                                <span th:if="${request.status == 'PENDING'}" class="badge bg-warning">Chờ duyệt</span>
+                                <span th:if="${request.status == 'APPROVED'}" class="badge bg-success">Đã duyệt</span>
+                                <span th:if="${request.status == 'REJECTED'}" class="badge bg-danger">Từ chối</span>
+                                <span th:if="${request.status == 'CANCELLED'}" class="badge bg-secondary">Đã hủy</span>
+                            </td>
+                            <td th:text="${request.approvedBy?.fullName ?: 'Chưa duyệt'}">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
