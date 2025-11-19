@@ -25,9 +25,20 @@
             <h4><i class="fas fa-graduation-cap"></i> Thông tin Trình độ</h4>
         </div>
         <div class="card-body">
+            <div th:if="${employeeName}" class="alert alert-info">
+                <i class="fas fa-user me-2"></i>
+                <strong>Nhân viên:</strong> <span th:text="${employeeName}"></span>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span th:text="${errorMessage}">Có lỗi xảy ra.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
             <form th:action="@{/educations/save}" th:object="${education}" method="post">
                 <input type="hidden" th:field="*{id}">
-                <input type="hidden" th:field="*{employee.id}">
+                <input type="hidden" th:field="*{employeeId}">
 
                 <!-- Thông tin cơ bản -->
                 <div class="row">
@@ -43,8 +54,11 @@
                         <label class="form-label">
                             <i class="fas fa-users"></i> Thành phần bản thân
                         </label>
-                        <select class="form-select" th:field="*{familyBackground}">
+                        <select class="form-select"
+                                th:field="*{familyBackground}"
+                                th:classappend="${#fields.hasErrors('familyBackground')} ? ' is-invalid' : ''">
                             <option value="">-- Chọn --</option>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('familyBackground')}" th:errors="*{familyBackground}"></div>
                             <option value="Công nhân">Công nhân</option>
                             <option value="Nông dân">Nông dân</option>
                             <option value="Trí thức">Trí thức</option>
@@ -58,7 +72,10 @@
                         <label class="form-label">
                             <i class="fas fa-book"></i> Trình độ văn hóa
                         </label>
-                        <select class="form-select" th:field="*{culturalLevel}">
+                        <select class="form-select"
+                                th:field="*{culturalLevel}"
+                                th:classappend="${#fields.hasErrors('culturalLevel')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('culturalLevel')}" th:errors="*{culturalLevel}"></div>
                             <option value="">-- Chọn --</option>
                             <option value="12/12">12/12</option>
                             <option value="10/12">10/12</option>
@@ -82,15 +99,21 @@
                         <label class="form-label">
                             <i class="fas fa-laptop-code"></i> Chuyên môn
                         </label>
-                        <input type="text" class="form-control" th:field="*{specialization}"
+                        <input type="text" class="form-control"
+                               th:field="*{specialization}"
+                               th:classappend="${#fields.hasErrors('specialization')} ? ' is-invalid' : ''"
                                placeholder="VD: Công nghệ thông tin, Kế toán, Quản trị kinh doanh...">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('specialization')}" th:errors="*{specialization}"></div>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">
                             <i class="fas fa-award"></i> Bằng cấp
                         </label>
-                        <select class="form-select" th:field="*{degree}">
+                        <select class="form-select"
+                                th:field="*{degree}"
+                                th:classappend="${#fields.hasErrors('degree')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('degree')}" th:errors="*{degree}"></div>
                             <option value="">-- Chọn --</option>
                             <option value="Tiến sĩ">Tiến sĩ</option>
                             <option value="Thạc sĩ">Thạc sĩ</option>
@@ -108,16 +131,22 @@
                         <label class="form-label">
                             <i class="fas fa-university"></i> Trường học
                         </label>
-                        <input type="text" class="form-control" th:field="*{university}"
+                        <input type="text" class="form-control"
+                               th:field="*{university}"
+                               th:classappend="${#fields.hasErrors('university')} ? ' is-invalid' : ''"
                                placeholder="VD: Đại học Bách Khoa Hà Nội, Đại học Kinh tế Quốc dân...">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('university')}" th:errors="*{university}"></div>
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label class="form-label">
                             <i class="fas fa-calendar"></i> Năm tốt nghiệp
                         </label>
-                        <input type="number" class="form-control" th:field="*{graduationYear}"
-                               min="1950" max="2030" placeholder="VD: 2020">
+                        <input type="number" class="form-control"
+                               th:field="*{graduationYear}"
+                               th:classappend="${#fields.hasErrors('graduationYear')} ? ' is-invalid' : ''"
+                               min="1950" max="2100" placeholder="VD: 2020">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('graduationYear')}" th:errors="*{graduationYear}"></div>
                     </div>
                 </div>
 
@@ -135,7 +164,10 @@
                         <label class="form-label">
                             <i class="fas fa-language"></i> Ngoại ngữ
                         </label>
-                        <select class="form-select" th:field="*{foreignLanguage}">
+                        <select class="form-select"
+                                th:field="*{foreignLanguage}"
+                                th:classappend="${#fields.hasErrors('foreignLanguage')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('foreignLanguage')}" th:errors="*{foreignLanguage}"></div>
                             <option value="">-- Chọn --</option>
                             <option value="Tiếng Anh">Tiếng Anh</option>
                             <option value="Tiếng Nhật">Tiếng Nhật</option>
@@ -152,7 +184,10 @@
                         <label class="form-label">
                             <i class="fas fa-star"></i> Trình độ ngoại ngữ
                         </label>
-                        <select class="form-select" th:field="*{languageLevel}">
+                        <select class="form-select"
+                                th:field="*{languageLevel}"
+                                th:classappend="${#fields.hasErrors('languageLevel')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('languageLevel')}" th:errors="*{languageLevel}"></div>
                             <option value="">-- Chọn --</option>
                             <option value="A1">A1 - Sơ cấp</option>
                             <option value="A2">A2 - Sơ cấp cao</option>
@@ -197,7 +232,7 @@
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save"></i> Lưu lại
                     </button>
-                    <a th:href="@{/educations/employee/{id}(id=${education.employee?.id})}"
+                    <a th:href="@{/educations/employee/{id}(id=${education.employeeId})}"
                        class="btn btn-secondary">
                         <i class="fas fa-times"></i> Hủy
                     </a>

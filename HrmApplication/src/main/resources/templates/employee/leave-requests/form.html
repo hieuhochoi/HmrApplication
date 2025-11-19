@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tạo yêu cầu nghỉ phép</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">HRM System</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/employee/leave-requests">Danh sách</a>
+                <a class="nav-link" href="/logout">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="mb-4"><i class="fas fa-calendar-times"></i> Tạo yêu cầu nghỉ phép</h2>
+
+        <div th:if="${employee != null}" class="alert alert-info">
+            <strong>Số ngày phép còn lại:</strong> 
+            <span th:text="${remainingAnnualLeaveDays ?: 0}">0</span> ngày
+            <span th:if="${remainingAnnualLeaveDays != null and remainingAnnualLeaveDays <= 0}" class="text-danger">
+                (Bạn đã hết phép năm, vui lòng chọn loại nghỉ khác)
+            </span>
+        </div>
+
+        <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/employee/leave-requests/save}" th:object="${leaveRequest}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Loại nghỉ phép <span class="text-danger">*</span></label>
+                        <select class="form-select" th:field="*{leaveType}" required>
+                            <option value="">-- Chọn loại nghỉ --</option>
+                            <option value="ANNUAL">Nghỉ phép năm</option>
+                            <option value="SICK">Nghỉ ốm</option>
+                            <option value="UNPAID">Nghỉ không lương</option>
+                            <option value="MATERNITY">Nghỉ thai sản</option>
+                            <option value="OTHER">Khác</option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('leaveType')}" th:errors="*{leaveType}" class="text-danger"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Từ ngày <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" th:field="*{startDate}" required>
+                            <div th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}" class="text-danger"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Đến ngày <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" th:field="*{endDate}" required>
+                            <div th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}" class="text-danger"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Lý do <span class="text-danger">*</span></label>
+                        <textarea class="form-control" th:field="*{reason}" rows="3" required></textarea>
+                        <div th:if="${#fields.hasErrors('reason')}" th:errors="*{reason}" class="text-danger"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/employee/leave-requests" class="btn btn-secondary">Hủy</a>
+                        <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

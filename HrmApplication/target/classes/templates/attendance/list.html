@@ -19,6 +19,18 @@
         <a href="/attendances/new" class="btn btn-success"><i class="fas fa-plus"></i> Thêm mới</a>
     </div>
 
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${successMessage}">Thành công.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${errorMessage}">Có lỗi xảy ra.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <div class="card mb-3">
         <div class="card-body">
             <form method="get" class="row g-3">
@@ -28,6 +40,7 @@
                         <option value="">-- Tất cả --</option>
                         <option th:each="emp : ${employees}"
                                 th:value="${emp.id}"
+                                th:selected="${selectedEmployeeId != null and emp.id == selectedEmployeeId}"
                                 th:text="${emp.fullName}"></option>
                     </select>
                 </div>
@@ -51,11 +64,12 @@
             <th>Giờ công</th>
             <th>Tăng ca</th>
             <th>Trạng thái</th>
+            <th>Thao tác</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="att : ${attendances}">
-            <td th:text="${att.employee.fullName}"></td>
+            <td th:text="${att.employeeName}"></td>
             <td th:text="${att.workDate}"></td>
             <td th:text="${att.shift}"></td>
             <td th:text="${att.checkIn}"></td>
@@ -66,10 +80,29 @@
                 <span class="badge bg-success" th:if="${att.status == 'PRESENT'}">Có mặt</span>
                 <span class="badge bg-warning" th:if="${att.status == 'LEAVE'}">Nghỉ phép</span>
                 <span class="badge bg-danger" th:if="${att.status == 'ABSENT'}">Vắng</span>
+                <span class="badge bg-secondary" th:if="${att.status == 'LATE'}">Đi muộn</span>
+            </td>
+            <td>
+                <a th:href="@{/attendances/edit/{id}(id=${att.id})}" class="btn btn-sm btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a th:href="@{/attendances/delete/{id}(id=${att.id})}"
+                   class="btn btn-sm btn-danger"
+                   onclick="return confirm('Bạn có chắc muốn xóa bản ghi chấm công này?')">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(attendances)}">
+            <td colspan="9" class="text-center text-muted">
+                <i class="fas fa-inbox fa-3x mb-3"></i>
+                <p>Chưa có dữ liệu chấm công</p>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

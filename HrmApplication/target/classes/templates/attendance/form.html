@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Chấm công</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -18,70 +19,118 @@
             <h4>Thông tin Chấm công</h4>
         </div>
         <div class="card-body">
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span th:text="${errorMessage}">Có lỗi xảy ra.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
             <form th:action="@{/attendances/save}" th:object="${attendance}" method="post">
+                <input type="hidden" th:field="*{id}">
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Nhân viên *</label>
-                        <select class="form-select" th:field="*{employee.id}" required>
+                        <select class="form-select"
+                                th:field="*{employeeId}"
+                                th:classappend="${#fields.hasErrors('employeeId')} ? ' is-invalid' : ''"
+                                required>
                             <option value="">-- Chọn nhân viên --</option>
                             <option th:each="emp : ${employees}"
                                     th:value="${emp.id}"
                                     th:text="${emp.fullName}"></option>
                         </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('employeeId')}" th:errors="*{employeeId}"></div>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Ngày làm việc *</label>
-                        <input type="date" class="form-control" th:field="*{workDate}" required>
+                        <input type="date" class="form-control"
+                               th:field="*{workDate}"
+                               th:classappend="${#fields.hasErrors('workDate')} ? ' is-invalid' : ''"
+                               required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('workDate')}" th:errors="*{workDate}"></div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label class="form-label">Ca làm việc</label>
-                        <select class="form-select" th:field="*{shift}">
+                        <label class="form-label">Ca làm việc *</label>
+                        <select class="form-select"
+                                th:field="*{shift}"
+                                th:classappend="${#fields.hasErrors('shift')} ? ' is-invalid' : ''"
+                                required>
                             <option value="Sáng">Sáng (7h-12h)</option>
                             <option value="Chiều">Chiều (13h-18h)</option>
                             <option value="Tối">Tối (18h-22h)</option>
                         </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('shift')}" th:errors="*{shift}"></div>
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Giờ vào</label>
-                        <input type="time" class="form-control" th:field="*{checkIn}">
+                        <input type="time" class="form-control"
+                               th:field="*{checkIn}"
+                               th:classappend="${#fields.hasErrors('checkIn')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('checkIn')}" th:errors="*{checkIn}"></div>
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Giờ ra</label>
-                        <input type="time" class="form-control" th:field="*{checkOut}">
+                        <input type="time" class="form-control"
+                               th:field="*{checkOut}"
+                               th:classappend="${#fields.hasErrors('checkOut')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('checkOut')}" th:errors="*{checkOut}"></div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Số giờ làm</label>
-                        <input type="number" step="0.5" class="form-control" th:field="*{workHours}">
+                        <input type="number" step="0.5" class="form-control"
+                               th:field="*{workHours}"
+                               th:classappend="${#fields.hasErrors('workHours')} ? ' is-invalid' : ''"
+                               min="0">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('workHours')}" th:errors="*{workHours}"></div>
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Giờ tăng ca</label>
-                        <input type="number" step="0.5" class="form-control" th:field="*{overtimeHours}">
+                        <input type="number" step="0.5" class="form-control"
+                               th:field="*{overtimeHours}"
+                               th:classappend="${#fields.hasErrors('overtimeHours')} ? ' is-invalid' : ''"
+                               min="0">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('overtimeHours')}" th:errors="*{overtimeHours}"></div>
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Trạng thái</label>
-                        <select class="form-select" th:field="*{status}">
+                        <select class="form-select"
+                                th:field="*{status}"
+                                th:classappend="${#fields.hasErrors('status')} ? ' is-invalid' : ''">
                             <option value="PRESENT">Có mặt</option>
                             <option value="LEAVE">Nghỉ phép</option>
                             <option value="ABSENT">Vắng mặt</option>
                             <option value="LATE">Đi muộn</option>
                         </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
                     </div>
+                </div>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           th:field="*{isLeave}"
+                           th:classappend="${#fields.hasErrors('isLeave')} ? ' is-invalid' : ''">
+                    <label class="form-check-label">Có nghỉ phép</label>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('isLeave')}" th:errors="*{isLeave}"></div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Lý do nghỉ</label>
-                    <input type="text" class="form-control" th:field="*{leaveReason}">
+                    <input type="text" class="form-control"
+                           th:field="*{leaveReason}"
+                           th:classappend="${#fields.hasErrors('leaveReason')} ? ' is-invalid' : ''">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('leaveReason')}" th:errors="*{leaveReason}"></div>
                 </div>
 
                 <button type="submit" class="btn btn-success">Lưu</button>
@@ -90,5 +139,7 @@
         </div>
     </div>
 </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

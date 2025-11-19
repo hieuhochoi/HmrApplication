@@ -50,6 +50,27 @@ public class Employee {
 
     private String status = "ACTIVE"; // ACTIVE, INACTIVE, RESIGNED
 
+    // Mapping với Keycloak
+    @Column(name = "keycloak_user_id", unique = true)
+    private String keycloakUserId;
+
+    // Phòng ban và chức vụ hiện tại
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "current_department_id")
+    private Department currentDepartment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "current_position_id")
+    private Position currentPosition;
+
+    // Trưởng phòng quản lý (self-reference)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id")
+    private Employee manager;
+
+    @OneToMany(mappedBy = "manager")
+    private List<Employee> subordinates;
+
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<Education> educations;
 
@@ -67,6 +88,12 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<Salary> salaries;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<LeaveRequest> leaveRequests;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<OvertimeRequest> overtimeRequests;
 
     @Column(name = "created_at", updatable = false)
     private LocalDate createdAt = LocalDate.now();

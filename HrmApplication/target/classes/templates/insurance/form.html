@@ -25,9 +25,20 @@
             <h4><i class="fas fa-shield-alt"></i> Thông tin Bảo hiểm</h4>
         </div>
         <div class="card-body">
+            <div th:if="${employeeName}" class="alert alert-info">
+                <i class="fas fa-user me-2"></i>
+                <strong>Nhân viên:</strong> <span th:text="${employeeName}"></span>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span th:text="${errorMessage}">Có lỗi xảy ra.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
             <form th:action="@{/insurances/save}" th:object="${insurance}" method="post">
                 <input type="hidden" th:field="*{id}">
-                <input type="hidden" th:field="*{employee.id}">
+                <input type="hidden" th:field="*{employeeId}">
 
                 <!-- Thông tin bảo hiểm -->
                 <div class="row">
@@ -43,8 +54,11 @@
                         <label class="form-label">
                             <i class="fas fa-barcode"></i> Số bảo hiểm *
                         </label>
-                        <input type="text" class="form-control" th:field="*{insuranceNumber}"
+                        <input type="text" class="form-control"
+                               th:field="*{insuranceNumber}"
+                               th:classappend="${#fields.hasErrors('insuranceNumber')} ? ' is-invalid' : ''"
                                placeholder="VD: 2001234567890" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('insuranceNumber')}" th:errors="*{insuranceNumber}"></div>
                         <small class="text-muted">Số sổ BHXH 10 chữ số</small>
                     </div>
 
@@ -52,7 +66,10 @@
                         <label class="form-label">
                             <i class="fas fa-tag"></i> Loại bảo hiểm *
                         </label>
-                        <select class="form-select" th:field="*{insuranceType}" required>
+                        <select class="form-select"
+                                th:field="*{insuranceType}"
+                                th:classappend="${#fields.hasErrors('insuranceType')} ? ' is-invalid' : ''"
+                                required>
                             <option value="">-- Chọn loại --</option>
                             <option value="BHXH">
                                 <i class="fas fa-briefcase"></i> Bảo hiểm xã hội (BHXH)
@@ -67,6 +84,7 @@
                                 <i class="fas fa-hard-hat"></i> Bảo hiểm tai nạn lao động (BHTNLĐ)
                             </option>
                         </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('insuranceType')}" th:errors="*{insuranceType}"></div>
                     </div>
                 </div>
 
@@ -86,13 +104,17 @@
                         </label>
                         <input type="text" class="form-control" th:field="*{issuedPlace}"
                                placeholder="VD: BHXH Thành phố Hà Nội">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('issuedPlace')}" th:errors="*{issuedPlace}"></div>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">
                             <i class="fas fa-calendar-alt"></i> Ngày cấp
                         </label>
-                        <input type="date" class="form-control" th:field="*{issuedDate}">
+                        <input type="date" class="form-control"
+                               th:field="*{issuedDate}"
+                               th:classappend="${#fields.hasErrors('issuedDate')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('issuedDate')}" th:errors="*{issuedDate}"></div>
                     </div>
                 </div>
 
@@ -109,8 +131,11 @@
                     <label class="form-label">
                         <i class="fas fa-hospital-user"></i> Nơi đăng ký khám chữa bệnh ban đầu
                     </label>
-                    <input type="text" class="form-control" th:field="*{medicalFacility}"
+                    <input type="text" class="form-control"
+                           th:field="*{medicalFacility}"
+                           th:classappend="${#fields.hasErrors('medicalFacility')} ? ' is-invalid' : ''"
                            placeholder="VD: Bệnh viện Bạch Mai, Bệnh viện E...">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('medicalFacility')}" th:errors="*{medicalFacility}"></div>
                     <small class="text-muted">
                         Cơ sở y tế nơi người tham gia BHYT đăng ký khám chữa bệnh ban đầu
                     </small>
@@ -153,7 +178,7 @@
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save"></i> Lưu lại
                     </button>
-                    <a th:href="@{/insurances/employee/{id}(id=${insurance.employee?.id})}"
+                    <a th:href="@{/insurances/employee/{id}(id=${insurance.employeeId})}"
                        class="btn btn-secondary">
                         <i class="fas fa-times"></i> Hủy
                     </a>

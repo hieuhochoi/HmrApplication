@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Yêu cầu tăng ca</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">HRM System</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link" href="/logout">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-clock"></i> Yêu cầu tăng ca của tôi</h2>
+            <a href="/employee/overtime-requests/form" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Tạo yêu cầu mới
+            </a>
+        </div>
+
+        <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ngày</th>
+                            <th>Từ giờ</th>
+                            <th>Đến giờ</th>
+                            <th>Số giờ</th>
+                            <th>Lý do</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${overtimeRequests == null or overtimeRequests.isEmpty()}">
+                            <td colspan="7" class="text-center text-muted">Chưa có yêu cầu tăng ca nào</td>
+                        </tr>
+                        <tr th:each="request : ${overtimeRequests}">
+                            <td th:text="${#temporals.format(request.overtimeDate, 'dd/MM/yyyy')}">-</td>
+                            <td th:text="${#temporals.format(request.startTime, 'HH:mm')}">-</td>
+                            <td th:text="${#temporals.format(request.endTime, 'HH:mm')}">-</td>
+                            <td th:text="${request.totalHours}">-</td>
+                            <td th:text="${request.reason}">-</td>
+                            <td>
+                                <span th:if="${request.status == 'PENDING'}" class="badge bg-warning">Chờ duyệt</span>
+                                <span th:if="${request.status == 'APPROVED'}" class="badge bg-success">Đã duyệt</span>
+                                <span th:if="${request.status == 'REJECTED'}" class="badge bg-danger">Từ chối</span>
+                            </td>
+                            <td th:text="${#temporals.format(request.createdAt, 'dd/MM/yyyy HH:mm')}">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

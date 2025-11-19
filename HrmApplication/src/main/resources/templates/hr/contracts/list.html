@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý hợp đồng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">HRM System - HR</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link" href="/logout">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-file-contract"></i> Quản lý hợp đồng</h2>
+            <div>
+                <a href="/hr/contracts/expiring?days=30" class="btn btn-warning">
+                    <i class="fas fa-exclamation-triangle"></i> Hợp đồng sắp hết hạn
+                </a>
+                <a href="/hr/employees" class="btn btn-secondary">
+                    <i class="fas fa-users"></i> Chọn nhân viên
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${expiringContracts != null and !expiringContracts.isEmpty()}" class="alert alert-warning">
+            <strong><i class="fas fa-exclamation-triangle"></i> Cảnh báo:</strong> 
+            Có <span th:text="${expiringContracts.size()}">0</span> hợp đồng sắp hết hạn trong 30 ngày tới.
+            <a href="/hr/contracts/expiring?days=30" class="alert-link">Xem chi tiết</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Số hợp đồng</th>
+                            <th>Nhân viên</th>
+                            <th>Loại hợp đồng</th>
+                            <th>Ngày ký</th>
+                            <th>Ngày bắt đầu</th>
+                            <th>Ngày kết thúc</th>
+                            <th>Lương</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${contracts == null or contracts.isEmpty()}">
+                            <td colspan="9" class="text-center text-muted">Chưa có hợp đồng nào</td>
+                        </tr>
+                        <tr th:each="contract : ${contracts}">
+                            <td th:text="${contract.contractNumber}">-</td>
+                            <td th:text="${contract.employee.fullName}">-</td>
+                            <td th:text="${contract.contractType}">-</td>
+                            <td th:text="${contract.signedDate != null ? #temporals.format(contract.signedDate, 'dd/MM/yyyy') : 'N/A'}">-</td>
+                            <td th:text="${contract.startDate != null ? #temporals.format(contract.startDate, 'dd/MM/yyyy') : 'N/A'}">-</td>
+                            <td>
+                                <span th:if="${contract.endDate != null}" th:text="${#temporals.format(contract.endDate, 'dd/MM/yyyy')}">-</span>
+                                <span th:if="${contract.endDate == null}">Không xác định</span>
+                            </td>
+                            <td th:text="${contract.salary != null ? #numbers.formatDecimal(contract.salary, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : 'N/A'}">-</td>
+                            <td>
+                                <span th:if="${contract.status == 'ACTIVE'}" class="badge bg-success">Có hiệu lực</span>
+                                <span th:if="${contract.status == 'EXPIRED'}" class="badge bg-danger">Hết hạn</span>
+                                <span th:if="${contract.status == 'TERMINATED'}" class="badge bg-secondary">Chấm dứt</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/contracts/employee/{employeeId}(employeeId=${contract.employee.id})}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> Xem
+                                </a>
+                                <div th:if="${contract.status == 'ACTIVE'}" class="btn-group">
+                                    <a th:href="@{/hr/contracts/{id}/renew(id=${contract.id})}" class="btn btn-sm btn-success" title="Gia hạn hợp đồng">
+                                        <i class="fas fa-redo"></i> Gia hạn
+                                    </a>
+                                    <a th:href="@{/hr/contracts/{id}/convert(id=${contract.id})}" class="btn btn-sm btn-warning" title="Chuyển loại hợp đồng">
+                                        <i class="fas fa-exchange-alt"></i> Chuyển loại
+                                    </a>
+                                </div>
+                                <a th:href="@{/contracts/new(employeeId=${contract.employee.id})}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-plus"></i> Thêm mới
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

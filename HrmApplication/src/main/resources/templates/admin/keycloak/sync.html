@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đồng bộ Keycloak</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">HRM System - Admin</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link" href="/admin/users">Quản lý Users</a>
+                <a class="nav-link" href="/logout">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <h2><i class="fas fa-sync"></i> Đồng bộ Keycloak với Database</h2>
+
+        <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class="fas fa-info-circle"></i> Thông tin</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Chức năng này sẽ:</strong></p>
+                        <ul>
+                            <li>Lấy danh sách users từ Keycloak</li>
+                            <li>Tự động liên kết với Employee trong database theo email</li>
+                            <li>Cập nhật trường <code>keycloak_user_id</code> cho các Employee chưa được liên kết</li>
+                        </ul>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            <strong>Lưu ý:</strong> Keycloak và Database là 2 hệ thống riêng biệt. 
+                            Chức năng này chỉ liên kết chúng với nhau, không sao chép dữ liệu.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="fas fa-chart-bar"></i> Trạng thái</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong>Employees chưa liên kết:</strong>
+                            <span class="badge bg-warning ms-2" th:text="${unlinkedEmployees}">0</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Keycloak users chưa có Employee:</strong>
+                            <span class="badge bg-warning ms-2" th:text="${unlinkedKeycloakUsers}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Employees chưa liên kết</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${unlinkedEmployeeList != null and !unlinkedEmployeeList.isEmpty()}">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Họ tên</th>
+                                        <th>Email</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="emp : ${unlinkedEmployeeList}">
+                                        <td th:text="${emp.id}">-</td>
+                                        <td th:text="${emp.fullName}">-</td>
+                                        <td th:text="${emp.email ?: 'N/A'}">-</td>
+                                        <td>
+                                            <span th:if="${emp.status == 'ACTIVE'}" class="badge bg-success">ACTIVE</span>
+                                            <span th:if="${emp.status == 'INACTIVE'}" class="badge bg-warning">INACTIVE</span>
+                                            <span th:if="${emp.status == 'RESIGNED'}" class="badge bg-danger">RESIGNED</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:if="${unlinkedEmployeeList == null or unlinkedEmployeeList.isEmpty()}" class="text-muted">
+                            Tất cả employees đã được liên kết!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class="fas fa-users"></i> Keycloak Users</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${keycloakUsers != null and !keycloakUsers.isEmpty()}">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Enabled</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="user : ${keycloakUsers}">
+                                        <td th:text="${user.username}">-</td>
+                                        <td th:text="${user.email ?: 'N/A'}">-</td>
+                                        <td>
+                                            <span th:if="${user.enabled}" class="badge bg-success">Yes</span>
+                                            <span th:if="${!user.enabled}" class="badge bg-danger">No</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:if="${keycloakUsers == null or keycloakUsers.isEmpty()}" class="text-muted">
+                            Không có users trong Keycloak
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <form th:action="@{/admin/keycloak/sync}" method="post">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-sync"></i> Đồng bộ ngay
+                    </button>
+                    <a href="/admin/users" class="btn btn-secondary btn-lg ms-2">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

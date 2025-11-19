@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chuyển phòng ban / Chức vụ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">HRM System - HR</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/hr/employees">Danh sách nhân viên</a>
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link" href="/logout">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="mb-4"><i class="fas fa-exchange-alt"></i> Chuyển phòng ban / Chức vụ</h2>
+
+        <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${employee != null}" class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Thông tin nhân viên hiện tại</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Họ tên:</strong> <span th:text="${employee.fullName}">-</span></p>
+                        <p><strong>Phòng ban hiện tại:</strong> 
+                            <span th:text="${employee.currentDepartment?.departmentName ?: 'Chưa gán'}">-</span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Chức vụ hiện tại:</strong> 
+                            <span th:text="${employee.currentPosition?.positionName ?: 'Chưa gán'}">-</span>
+                        </p>
+                        <p><strong>Trưởng phòng hiện tại:</strong> 
+                            <span th:text="${employee.manager?.fullName ?: 'Chưa có'}">-</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">Thông tin chuyển đổi</h5>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/hr/employees/{id}/transfer(id=${employee.id})}" method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phòng ban mới</label>
+                            <select class="form-select" name="newDepartmentId">
+                                <option value="">-- Giữ nguyên --</option>
+                                <option th:each="dept : ${departments}" 
+                                        th:value="${dept.id}" 
+                                        th:text="${dept.departmentName}">-</option>
+                            </select>
+                            <div class="form-text">Chọn phòng ban mới hoặc để trống nếu không thay đổi</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Chức vụ mới</label>
+                            <select class="form-select" name="newPositionId">
+                                <option value="">-- Giữ nguyên --</option>
+                                <option th:each="pos : ${positions}" 
+                                        th:value="${pos.id}" 
+                                        th:text="${pos.positionName}">-</option>
+                            </select>
+                            <div class="form-text">Chọn chức vụ mới hoặc để trống nếu không thay đổi</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Trưởng phòng mới</label>
+                        <select class="form-select" name="newManagerId">
+                            <option value="">-- Không có trưởng phòng --</option>
+                            <option th:each="manager : ${managers}" 
+                                    th:value="${manager.id}" 
+                                    th:text="${manager.fullName + ' - ' + manager.currentDepartment?.departmentName}">-</option>
+                        </select>
+                        <div class="form-text">Chọn trưởng phòng mới (nếu có)</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Lý do chuyển đổi <span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="reason" rows="3" required 
+                                  placeholder="Vui lòng nêu rõ lý do chuyển phòng ban/chức vụ..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/hr/employees" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Xác nhận chuyển đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

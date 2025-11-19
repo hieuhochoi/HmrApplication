@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Master Data</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">HRM System - Admin</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link" href="/logout">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-database"></i> Quản lý Master Data</h2>
+            <a href="/admin/master-data/form" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Thêm mới
+            </a>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Filter by type -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <form method="get" action="/admin/master-data">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <select name="type" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Tất cả loại --</option>
+                                <option value="EDUCATION_LEVEL" th:selected="${selectedType == 'EDUCATION_LEVEL'}">Trình độ học vấn</option>
+                                <option value="SALARY_GRADE" th:selected="${selectedType == 'SALARY_GRADE'}">Bậc lương</option>
+                                <option value="SHIFT" th:selected="${selectedType == 'SHIFT'}">Ca làm việc</option>
+                                <option value="CONTRACT_TYPE" th:selected="${selectedType == 'CONTRACT_TYPE'}">Loại hợp đồng</option>
+                                <option value="INSURANCE_TYPE" th:selected="${selectedType == 'INSURANCE_TYPE'}">Loại bảo hiểm</option>
+                                <option value="LEAVE_POLICY" th:selected="${selectedType == 'LEAVE_POLICY'}">Quy định phép năm</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Loại</th>
+                            <th>Mã</th>
+                            <th>Tên</th>
+                            <th>Mô tả</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${masterDataList == null or masterDataList.isEmpty()}">
+                            <td colspan="6" class="text-center text-muted">Chưa có dữ liệu</td>
+                        </tr>
+                        <tr th:each="data : ${masterDataList}">
+                            <td th:text="${data.dataType}">-</td>
+                            <td th:text="${data.code}">-</td>
+                            <td th:text="${data.name}">-</td>
+                            <td th:text="${data.description}">-</td>
+                            <td>
+                                <span th:if="${data.isActive}" class="badge bg-success">Hoạt động</span>
+                                <span th:unless="${data.isActive}" class="badge bg-secondary">Vô hiệu</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/admin/master-data/form(id=${data.id})}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </a>
+                                <form th:action="@{/admin/master-data/delete/{id}(id=${data.id})}" method="post" class="d-inline" onsubmit="return confirm('Xác nhận xóa?')">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i> Xóa
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

@@ -11,15 +11,10 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(@AuthenticationPrincipal OidcUser principal, Model model) {
+        // Redirect đến dashboard nếu đã đăng nhập
         if (principal != null) {
-            model.addAttribute("username", principal.getPreferredUsername());
-            model.addAttribute("email", principal.getEmail());
-            model.addAttribute("fullName", principal.getFullName());
-
-            // Lấy roles
-            var roles = principal.getClaimAsStringList("roles");
-            model.addAttribute("roles", roles);
+            return "redirect:/dashboard";
         }
-        return "index";
+        return "redirect:/oauth2/authorization/keycloak";
     }
 }

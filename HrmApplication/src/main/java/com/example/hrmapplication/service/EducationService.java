@@ -1,6 +1,7 @@
 package com.example.hrmapplication.service;
 
 import com.example.hrmapplication.entity.Education;
+import com.example.hrmapplication.exception.ResourceNotFoundException;
 import com.example.hrmapplication.repository.EducationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class EducationService {
 
     public Education findById(Long id) {
         return educationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy trình độ"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy trình độ với ID: " + id));
     }
 
     public Education save(Education education) {

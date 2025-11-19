@@ -42,6 +42,18 @@
         <i class="fas fa-user"></i> <strong>Nhân viên:</strong> <span th:text="${employeeName}"></span>
     </div>
 
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${successMessage}">Thành công.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${errorMessage}">Có lỗi xảy ra.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <div class="card shadow-sm">
         <div class="card-header bg-warning text-dark">
             <h5 class="mb-0"><i class="fas fa-list"></i> Danh sách Bảo hiểm</h5>
@@ -81,8 +93,8 @@
                                     </span>
                         </td>
                         <td th:text="${ins.issuedPlace}"></td>
-                        <td th:text="${#temporals.format(ins.issuedDate, 'dd/MM/yyyy')}"></td>
-                        <td th:text="${ins.medicalFacility}"></td>
+                        <td th:text="${ins.issuedDate != null ? #temporals.format(ins.issuedDate, 'dd/MM/yyyy') : '—'}"></td>
+                        <td th:text="${ins.medicalFacility != null ? ins.medicalFacility : '—'}"></td>
                         <td>
                             <a th:href="@{/insurances/edit/{id}(id=${ins.id})}"
                                class="btn btn-sm btn-warning" title="Sửa">
