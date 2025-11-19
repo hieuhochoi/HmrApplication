@@ -36,6 +36,12 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
+        <div th:if="${warningMessage}" class="alert alert-warning alert-dismissible fade show">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span th:text="${warningMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
         <div class="row mt-4">
             <div class="col-md-6">
                 <div class="card">
