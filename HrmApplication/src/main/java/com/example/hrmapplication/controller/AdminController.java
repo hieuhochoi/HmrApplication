@@ -424,12 +424,63 @@ public class AdminController {
     public String syncKeycloakUsers(RedirectAttributes redirectAttributes) {
         try {
             int syncedCount = keycloakSyncService.syncAllUsers();
-            redirectAttributes.addFlashAttribute("successMessage", 
-                    "Đã đồng bộ " + syncedCount + " users từ Keycloak với database!");
+            if (syncedCount > 0) {
+                redirectAttributes.addFlashAttribute("successMessage", 
+                        "Đã đồng bộ thành công " + syncedCount + " employees với Keycloak users!");
+            } else {
+                redirectAttributes.addFlashAttribute("warningMessage", 
+                        "Không có employees nào được đồng bộ. Kiểm tra lại email trong Keycloak và Database có khớp không.");
+            }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi đồng bộ: " + e.getMessage());
         }
         return "redirect:/admin/keycloak/sync";
+    }
+
+    // API endpoint để test sync và xem chi tiết (JSON response)
+    @GetMapping("/keycloak/sync/test")
+    @ResponseBody
+    public java.util.Map<String, Object> testSync() {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        try {
+            // Lấy danh sách Keycloak users
+            List<org.keycloak.representations.idm.UserRepresentation> keycloakUsers = 
+                    keycloakUserService.getAllUsers();
+            
+            // Lấy danh sách employees
+            List<com.example.hrmapplication.entity.Employee> employees = 
+                    employeeRepository.findAll();
+            
+            result.put("keycloakUsersCount", keycloakUsers.size());
+            result.put("employeesCount", employees.size());
+            result.put("keycloakUsers", keycloakUsers.stream()
+                    .map(u -> java.util.Map.of(
+                            "id", u.getId() != null ? u.getId() : "",
+                            "username", u.getUsername() != null ? u.getUsername() : "",
+                            "email", u.getEmail() != null ? u.getEmail() : ""
+                    ))
+                    .collect(java.util.stream.Collectors.toList()));
+            result.put("employees", employees.stream()
+                    .map(e -> java.util.Map.of(
+                            "id", e.getId(),
+                            "fullName", e.getFullName(),
+                            "email", e.getEmail() != null ? e.getEmail() : "",
+                            "keycloakUserId", e.getKeycloakUserId() != null ? e.getKeycloakUserId() : "NULL"
+                    ))
+                    .collect(java.util.stream.Collectors.toList()));
+            
+            // Thực hiện sync
+            int syncedCount = keycloakSyncService.syncAllUsers();
+            result.put("syncedCount", syncedCount);
+            result.put("success", true);
+            result.put("message", "Đã đồng bộ " + syncedCount + " employees");
+            
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("error", e.getMessage());
+            result.put("stackTrace", java.util.Arrays.toString(e.getStackTrace()));
+        }
+        return result;
     }
 }
 
