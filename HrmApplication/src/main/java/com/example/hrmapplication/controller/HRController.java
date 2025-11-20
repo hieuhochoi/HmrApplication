@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -62,6 +63,12 @@ public class HRController {
     @Autowired
     private com.example.hrmapplication.service.EmailService emailService;
 
+    @Autowired
+    private com.example.hrmapplication.service.KeycloakUserService keycloakUserService;
+
+    @Autowired
+    private com.example.hrmapplication.mapper.SalaryMapper salaryMapper;
+
     // ========== QUẢN LÝ NHÂN VIÊN ==========
 
     @GetMapping("/employees")
@@ -104,6 +111,164 @@ public class HRController {
             model.addAttribute("totalPages", 0);
             model.addAttribute("totalElements", 0L);
             return "hr/employees/list";
+        }
+    }
+
+    @GetMapping("/employees/form")
+    public String showEmployeeForm(@RequestParam(required = false) Long id, Model model) {
+        try {
+            Employee employee;
+            if (id != null) {
+                employee = employeeRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên với ID: " + id));
+            } else {
+                employee = new Employee();
+            }
+            
+            model.addAttribute("employee", employee);
+            model.addAttribute("departments", departmentService.findAll());
+            model.addAttribute("positions", positionService.findAll());
+            model.addAttribute("managers", employeeRepository.findAll().stream()
+                    .filter(e -> e.getCurrentPosition() != null && 
+                            (e.getCurrentPosition().getPositionName().contains("Trưởng phòng") || 
+                             e.getCurrentPosition().getPositionName().contains("Giám đốc")))
+                    .toList());
+            
+            // Thêm danh sách roles cho Keycloak (chỉ khi thêm mới)
+            if (id == null) {
+                try {
+                    List<org.keycloak.representations.idm.RoleRepresentation> allRoles = keycloakUserService.getAllRealmRoles();
+                    model.addAttribute("keycloakRoles", allRoles != null ? allRoles : List.of());
+                } catch (Exception e) {
+                    model.addAttribute("keycloakRoles", List.of());
+                }
+            }
+            
+            return "hr/employees/form";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            return "redirect:/hr/employees";
+        }
+    }
+
+    @PostMapping("/employees/save")
+    public String saveEmployee(@ModelAttribute Employee employee,
+                               @RequestParam(required = false) Long departmentId,
+                               @RequestParam(required = false) Long positionId,
+                               @RequestParam(required = false) Long managerId,
+                               @RequestParam(required = false) Boolean createKeycloakUser,
+                               @RequestParam(required = false) String keycloakUsername,
+                               @RequestParam(required = false) String keycloakPassword,
+                               @RequestParam(required = false) List<String> keycloakRoles,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            // Validate
+            if (employee.getFullName() == null || employee.getFullName().trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Họ tên không được để trống");
+                return "redirect:/hr/employees/form" + (employee.getId() != null ? "?id=" + employee.getId() : "");
+            }
+            
+            if (employee.getCitizenId() == null || employee.getCitizenId().trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Số CCCD không được để trống");
+                return "redirect:/hr/employees/form" + (employee.getId() != null ? "?id=" + employee.getId() : "");
+            }
+            
+            // Kiểm tra citizenId trùng lặp (nếu là thêm mới hoặc thay đổi)
+            if (employee.getId() == null) {
+                if (employeeRepository.findByCitizenId(employee.getCitizenId()).isPresent()) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Số CCCD đã tồn tại");
+                    return "redirect:/hr/employees/form";
+                }
+            } else {
+                Employee existing = employeeRepository.findById(employee.getId())
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
+                if (!existing.getCitizenId().equals(employee.getCitizenId())) {
+                    if (employeeRepository.findByCitizenId(employee.getCitizenId()).isPresent()) {
+                        redirectAttributes.addFlashAttribute("errorMessage", "Số CCCD đã tồn tại");
+                        return "redirect:/hr/employees/form?id=" + employee.getId();
+                    }
+                }
+            }
+            
+            // Set department, position, manager
+            if (departmentId != null) {
+                employee.setCurrentDepartment(departmentService.findById(departmentId));
+            }
+            
+            if (positionId != null) {
+                employee.setCurrentPosition(positionService.findById(positionId));
+            }
+            
+            if (managerId != null) {
+                employee.setManager(employeeService.findById(managerId));
+            }
+            
+            // Set default status if null
+            if (employee.getStatus() == null) {
+                employee.setStatus("ACTIVE");
+            }
+            
+            // Save employee first
+            boolean isNew = (employee.getId() == null);
+            employeeRepository.save(employee);
+            
+            // Nếu là thêm mới và có yêu cầu tạo Keycloak user
+            if (isNew && createKeycloakUser != null && createKeycloakUser 
+                    && keycloakUsername != null && !keycloakUsername.trim().isEmpty()
+                    && keycloakPassword != null && !keycloakPassword.trim().isEmpty()) {
+                try {
+                    // Tách họ tên thành firstName và lastName
+                    String[] nameParts = employee.getFullName().trim().split("\\s+", 2);
+                    String firstName = nameParts.length > 0 ? nameParts[0] : "";
+                    String lastName = nameParts.length > 1 ? nameParts[1] : "";
+                    
+                    // Tạo Keycloak user
+                    String keycloakUserId = keycloakUserService.createUser(
+                            keycloakUsername.trim(),
+                            employee.getEmail() != null ? employee.getEmail() : "",
+                            firstName,
+                            lastName,
+                            keycloakPassword,
+                            keycloakRoles != null ? keycloakRoles : List.of()
+                    );
+                    
+                    if (keycloakUserId != null) {
+                        // Liên kết với Employee
+                        employee.setKeycloakUserId(keycloakUserId);
+                        employeeRepository.save(employee);
+                        redirectAttributes.addFlashAttribute("successMessage", 
+                                "Thêm nhân viên và tạo tài khoản đăng nhập thành công!");
+                    } else {
+                        redirectAttributes.addFlashAttribute("warningMessage", 
+                                "Thêm nhân viên thành công nhưng không thể tạo tài khoản đăng nhập. Có thể username đã tồn tại.");
+                    }
+                } catch (Exception e) {
+                    redirectAttributes.addFlashAttribute("warningMessage", 
+                            "Thêm nhân viên thành công nhưng lỗi khi tạo tài khoản đăng nhập: " + e.getMessage());
+                }
+            } else {
+                redirectAttributes.addFlashAttribute("successMessage", 
+                        isNew ? "Thêm nhân viên thành công!" : "Cập nhật nhân viên thành công!");
+            }
+            
+            return "redirect:/hr/employees";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            return "redirect:/hr/employees/form" + (employee.getId() != null ? "?id=" + employee.getId() : "");
+        }
+    }
+
+    @GetMapping("/employees/{id}")
+    public String viewEmployee(@PathVariable Long id, Model model) {
+        try {
+            Employee employee = employeeRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên với ID: " + id));
+            
+            model.addAttribute("employee", employee);
+            return "hr/employees/view";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            return "redirect:/hr/employees";
         }
     }
 
@@ -476,6 +641,218 @@ public class HRController {
         }
         return "redirect:/hr/salaries?month=" + month + "&year=" + year;
     }
+
+    // ========== XEM VÀ SỬA LƯƠNG ==========
+
+    @GetMapping("/salaries/{id}")
+    public String viewSalary(@PathVariable Long id, Model model) {
+        try {
+            Salary salary = salaryService.findById(id);
+            model.addAttribute("salary", salary);
+            return "hr/salaries/view";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
+            return "redirect:/hr/salaries";
+        }
+    }
+
+    @GetMapping("/salaries/form")
+    public String showSalaryForm(@RequestParam(required = false) Long id, Model model) {
+        try {
+            com.example.hrmapplication.dto.SalaryRequest salaryRequest;
+            if (id != null) {
+                Salary salary = salaryService.findById(id);
+                salaryRequest = salaryMapper.toRequest(salary);
+                model.addAttribute("isEdit", true);
+            } else {
+                salaryRequest = new com.example.hrmapplication.dto.SalaryRequest();
+                model.addAttribute("isEdit", false);
+            }
+            model.addAttribute("salary", salaryRequest);
+            model.addAttribute("employees", employeeService.findAll());
+            return "hr/salaries/form";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
+            return "redirect:/hr/salaries";
+        }
+    }
+
+    @PostMapping("/salaries/save")
+    public String saveSalary(@ModelAttribute("salary") com.example.hrmapplication.dto.SalaryRequest salaryRequest,
+                            BindingResult bindingResult,
+                            Model model,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            // Kiểm tra employeeId
+            if (salaryRequest.getEmployeeId() == null) {
+                // Nếu đang edit và employeeId null, lấy lại từ database
+                if (salaryRequest.getId() != null && salaryRequest.getId() > 0) {
+                    try {
+                        Salary existingSalary = salaryService.findById(salaryRequest.getId());
+                        if (existingSalary != null && existingSalary.getEmployee() != null) {
+                            salaryRequest.setEmployeeId(existingSalary.getEmployee().getId());
+                        }
+                    } catch (Exception e) {
+                        // Ignore
+                    }
+                }
+                
+                // Nếu vẫn null sau khi thử lấy lại
+                if (salaryRequest.getEmployeeId() == null) {
+                    model.addAttribute("errorMessage", "Vui lòng chọn nhân viên.");
+                    model.addAttribute("employees", employeeService.findAll());
+                    model.addAttribute("isEdit", salaryRequest.getId() != null);
+                    // Load lại dữ liệu nếu đang edit
+                    if (salaryRequest.getId() != null && salaryRequest.getId() > 0) {
+                        try {
+                            Salary existingSalary = salaryService.findById(salaryRequest.getId());
+                            com.example.hrmapplication.dto.SalaryRequest existingRequest = salaryMapper.toRequest(existingSalary);
+                            model.addAttribute("salary", existingRequest);
+                        } catch (Exception e) {
+                            model.addAttribute("salary", salaryRequest);
+                        }
+                    } else {
+                        model.addAttribute("salary", salaryRequest);
+                    }
+                    return "hr/salaries/form";
+                }
+            }
+
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("employees", employeeService.findAll());
+                model.addAttribute("isEdit", salaryRequest.getId() != null);
+                return "hr/salaries/form";
+            }
+
+            Employee employee = employeeService.findById(salaryRequest.getEmployeeId());
+            if (employee == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy nhân viên với ID: " + salaryRequest.getEmployeeId());
+                return "redirect:/hr/salaries/form" + (salaryRequest.getId() != null ? "?id=" + salaryRequest.getId() : "");
+            }
+
+            Salary salary;
+            if (salaryRequest.getId() != null && salaryRequest.getId() > 0) {
+                // Cập nhật lương hiện có
+                salary = salaryService.findById(salaryRequest.getId());
+                salaryMapper.updateEntity(salary, salaryRequest);
+                salary.setEmployee(employee);
+            } else {
+                // Tạo lương mới
+                salary = salaryMapper.toEntity(salaryRequest);
+                salary.setEmployee(employee);
+                salary.setId(null); // Đảm bảo id là null để tạo mới
+            }
+
+            salaryService.save(salary);
+            redirectAttributes.addFlashAttribute("successMessage", 
+                    salaryRequest.getId() != null ? "Cập nhật lương thành công!" : "Tạo lương thành công!");
+            return "redirect:/hr/salaries?month=" + salary.getMonth() + "&year=" + salary.getYear();
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            model.addAttribute("employees", employeeService.findAll());
+            model.addAttribute("isEdit", salaryRequest.getId() != null);
+            return "hr/salaries/form";
+        }
+    }
+
+    // ========== DUYỆT THANH TOÁN LƯƠNG ==========
+
+    @PostMapping("/salaries/{id}/approve")
+    public String approveSalaryPayment(@PathVariable Long id,
+                                      RedirectAttributes redirectAttributes) {
+        try {
+            Salary salary = salaryService.findById(id);
+            if (salary == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy phiếu lương.");
+                return "redirect:/hr/salaries";
+            }
+
+            if ("PAID".equals(salary.getStatus())) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Phiếu lương này đã được thanh toán rồi.");
+                return "redirect:/hr/salaries/" + id;
+            }
+
+            // Duyệt thanh toán: chuyển trạng thái sang PAID và set ngày thanh toán
+            salary.setStatus("PAID");
+            salary.setPaymentDate(LocalDate.now());
+            salaryService.save(salary);
+
+            redirectAttributes.addFlashAttribute("successMessage", 
+                    "Đã duyệt thanh toán lương cho nhân viên " + salary.getEmployee().getFullName() + " thành công!");
+            return "redirect:/hr/salaries?month=" + salary.getMonth() + "&year=" + salary.getYear();
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            return "redirect:/hr/salaries";
+        }
+    }
+
+    @PostMapping("/salaries/{id}/cancel")
+    public String cancelSalaryPayment(@PathVariable Long id,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            Salary salary = salaryService.findById(id);
+            if (salary == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy phiếu lương.");
+                return "redirect:/hr/salaries";
+            }
+
+            // Hủy thanh toán: chuyển trạng thái sang CANCELLED
+            salary.setStatus("CANCELLED");
+            salary.setPaymentDate(null);
+            salaryService.save(salary);
+
+            redirectAttributes.addFlashAttribute("successMessage", 
+                    "Đã hủy thanh toán lương cho nhân viên " + salary.getEmployee().getFullName() + ".");
+            return "redirect:/hr/salaries?month=" + salary.getMonth() + "&year=" + salary.getYear();
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            return "redirect:/hr/salaries";
+        }
+    }
+
+    // ========== DUYỆT HÀNG LOẠT ==========
+
+    @PostMapping("/salaries/batch-approve")
+    public String batchApproveSalaries(@RequestParam(required = false) Integer month,
+                                      @RequestParam(required = false) Integer year,
+                                      RedirectAttributes redirectAttributes) {
+        try {
+            List<Salary> salaries;
+            if (month != null && year != null) {
+                salaries = salaryService.findByMonthYear(month, year);
+            } else {
+                salaries = salaryService.findAll();
+            }
+
+            // Chỉ duyệt các phiếu lương đang ở trạng thái PENDING
+            List<Salary> pendingSalaries = salaries.stream()
+                    .filter(s -> "PENDING".equals(s.getStatus()))
+                    .toList();
+
+            if (pendingSalaries.isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", 
+                        "Không có phiếu lương nào ở trạng thái 'Chờ thanh toán' để duyệt.");
+                return "redirect:/hr/salaries" + (month != null && year != null ? "?month=" + month + "&year=" + year : "");
+            }
+
+            int approvedCount = 0;
+            LocalDate today = LocalDate.now();
+            for (Salary salary : pendingSalaries) {
+                salary.setStatus("PAID");
+                salary.setPaymentDate(today);
+                salaryService.save(salary);
+                approvedCount++;
+            }
+
+            redirectAttributes.addFlashAttribute("successMessage", 
+                    "Đã duyệt thanh toán thành công cho " + approvedCount + " phiếu lương!");
+            return "redirect:/hr/salaries" + (month != null && year != null ? "?month=" + month + "&year=" + year : "");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            return "redirect:/hr/salaries";
+        }
+    }
+
     private byte[] generateSalaryListPdf(List<Salary> salaries, Integer month, Integer year) throws Exception {
         com.lowagie.text.Document document = new com.lowagie.text.Document(com.lowagie.text.PageSize.A4.rotate());
         java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();

@@ -26,6 +26,7 @@ com\example\hrmapplication\dto\EducationResponse$EducationResponseBuilder.class
 com\example\hrmapplication\dto\DepartmentResponse.class
 com\example\hrmapplication\service\SystemConfigService.class
 com\example\hrmapplication\service\EmployeeService.class
+com\example\hrmapplication\controller\RedirectController.class
 com\example\hrmapplication\util\ControllerUtil.class
 com\example\hrmapplication\controller\HRController.class
 com\example\hrmapplication\service\DepartmentService.class

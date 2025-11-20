@@ -10,10 +10,32 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
         <div class="container-fluid">
             <a class="navbar-brand" href="/dashboard">HRM System - HR</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="/dashboard">Dashboard</a>
-                <a class="nav-link" href="/employees">Quản lý</a>
-                <a class="nav-link" href="/logout">Đăng xuất</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-cog"></i> Quản lý
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/hr/employees"><i class="fas fa-users"></i> Nhân viên</a></li>
+                            <li><a class="dropdown-item" href="/hr/contracts"><i class="fas fa-file-contract"></i> Hợp đồng</a></li>
+                            <li><a class="dropdown-item" href="/hr/insurances"><i class="fas fa-shield-alt"></i> Bảo hiểm</a></li>
+                            <li><a class="dropdown-item" href="/hr/salaries"><i class="fas fa-money-bill-wave"></i> Lương</a></li>
+                            <li><a class="dropdown-item" href="/hr/attendances"><i class="fas fa-clock"></i> Chấm công</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/hr/approvals/leave-requests"><i class="fas fa-check-circle"></i> Duyệt yêu cầu</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
@@ -21,7 +43,7 @@
     <div class="container-fluid mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2><i class="fas fa-users"></i> Quản lý nhân viên</h2>
-            <a href="/employees/form" class="btn btn-primary">
+            <a href="/hr/employees/form" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Thêm nhân viên mới
             </a>
         </div>
@@ -114,10 +136,10 @@
                             </td>
                             <td>
                                 <div class="btn-group">
-                                    <a th:href="@{/employees/{id}(id=${employee.id})}" class="btn btn-sm btn-info">
+                                    <a th:href="@{/hr/employees/{id}(id=${employee.id})}" class="btn btn-sm btn-info">
                                         <i class="fas fa-eye"></i> Xem
                                     </a>
-                                    <a th:href="@{/employees/form(id=${employee.id})}" class="btn btn-sm btn-primary">
+                                    <a th:href="@{/hr/employees/form(id=${employee.id})}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-edit"></i> Sửa
                                     </a>
                                     <a th:href="@{/contracts/new(employeeId=${employee.id})}" class="btn btn-sm btn-success" title="Thêm hợp đồng">

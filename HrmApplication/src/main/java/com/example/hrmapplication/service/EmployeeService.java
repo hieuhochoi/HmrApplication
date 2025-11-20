@@ -22,6 +22,9 @@ public class EmployeeService implements CrudService<Employee, Long> {
 
     @Override
     public Employee findById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID nhân viên không được để trống");
+        }
         return employeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên với ID: " + id));
     }
