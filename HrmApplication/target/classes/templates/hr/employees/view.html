@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết Nhân viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">HRM System - HR</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">Dashboard</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-cog"></i> Quản lý
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/hr/employees"><i class="fas fa-users"></i> Nhân viên</a></li>
+                        <li><a class="dropdown-item" href="/hr/contracts"><i class="fas fa-file-contract"></i> Hợp đồng</a></li>
+                        <li><a class="dropdown-item" href="/hr/insurances"><i class="fas fa-shield-alt"></i> Bảo hiểm</a></li>
+                        <li><a class="dropdown-item" href="/hr/salaries"><i class="fas fa-money-bill-wave"></i> Lương</a></li>
+                        <li><a class="dropdown-item" href="/hr/attendances"><i class="fas fa-clock"></i> Chấm công</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/hr/approvals/leave-requests"><i class="fas fa-check-circle"></i> Duyệt yêu cầu</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user"></i> Chi tiết Nhân viên</h2>
+        <div>
+            <a th:href="@{/hr/employees/form(id=${employee.id})}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Sửa
+            </a>
+            <a href="/hr/employees" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Thông tin cá nhân</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Họ tên:</strong> <span th:text="${employee.fullName}">-</span></p>
+                    <p><strong>Giới tính:</strong> <span th:text="${employee.gender}">-</span></p>
+                    <p><strong>Ngày sinh:</strong> <span th:text="${employee.dateOfBirth}">-</span></p>
+                    <p><strong>Số CCCD:</strong> <span th:text="${employee.citizenId}">-</span></p>
+                    <p><strong>Email:</strong> <span th:text="${employee.email ?: 'N/A'}">-</span></p>
+                    <p><strong>Điện thoại:</strong> <span th:text="${employee.phone ?: 'N/A'}">-</span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Quê quán:</strong> <span th:text="${employee.birthPlace ?: 'N/A'}">-</span></p>
+                    <p><strong>Địa chỉ thường trú:</strong> <span th:text="${employee.address ?: 'N/A'}">-</span></p>
+                    <p><strong>Nơi ở hiện tại:</strong> <span th:text="${employee.currentAddress ?: 'N/A'}">-</span></p>
+                    <p><strong>Phòng ban:</strong> <span th:text="${employee.currentDepartment?.departmentName ?: 'Chưa gán'}">-</span></p>
+                    <p><strong>Chức vụ:</strong> <span th:text="${employee.currentPosition?.positionName ?: 'Chưa gán'}">-</span></p>
+                    <p><strong>Trưởng phòng:</strong> <span th:text="${employee.manager?.fullName ?: 'N/A'}">-</span></p>
+                    <p><strong>Trạng thái:</strong> 
+                        <span th:if="${employee.status == 'ACTIVE'}" class="badge bg-success">Đang làm việc</span>
+                        <span th:if="${employee.status == 'INACTIVE'}" class="badge bg-warning">Tạm nghỉ</span>
+                        <span th:if="${employee.status == 'RESIGNED'}" class="badge bg-danger">Đã nghỉ việc</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

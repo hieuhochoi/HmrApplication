@@ -10,10 +10,32 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
         <div class="container-fluid">
             <a class="navbar-brand" href="/dashboard">HRM System - HR</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="/dashboard">Dashboard</a>
-                <a class="nav-link" href="/salaries/form">Tính lương</a>
-                <a class="nav-link" href="/logout">Đăng xuất</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-cog"></i> Quản lý
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/hr/employees"><i class="fas fa-users"></i> Nhân viên</a></li>
+                            <li><a class="dropdown-item" href="/hr/contracts"><i class="fas fa-file-contract"></i> Hợp đồng</a></li>
+                            <li><a class="dropdown-item" href="/hr/insurances"><i class="fas fa-shield-alt"></i> Bảo hiểm</a></li>
+                            <li><a class="dropdown-item" href="/hr/salaries"><i class="fas fa-money-bill-wave"></i> Lương</a></li>
+                            <li><a class="dropdown-item" href="/hr/attendances"><i class="fas fa-clock"></i> Chấm công</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/hr/approvals/leave-requests"><i class="fas fa-check-circle"></i> Duyệt yêu cầu</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
@@ -38,6 +60,14 @@
                     <input type="hidden" name="year" th:value="${selectedYear}"/>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-envelope"></i> Gửi email phiếu lương
+                    </button>
+                </form>
+                <form th:action="@{/hr/salaries/batch-approve}" method="post" class="d-inline ms-1">
+                    <input type="hidden" name="month" th:value="${selectedMonth}"/>
+                    <input type="hidden" name="year" th:value="${selectedYear}"/>
+                    <button type="submit" class="btn btn-success" 
+                            onclick="return confirm('Bạn có chắc chắn muốn duyệt thanh toán cho TẤT CẢ các phiếu lương đang chờ thanh toán trong tháng/năm này?');">
+                        <i class="fas fa-check-double"></i> Duyệt tất cả
                     </button>
                 </form>
             </div>
@@ -161,12 +191,30 @@
                                 <span th:if="${salary.status == 'CANCELLED'}" class="badge bg-danger">Đã hủy</span>
                             </td>
                             <td>
-                                <a th:href="@{/salaries/{id}(id=${salary.id})}" class="btn btn-sm btn-info">
+                                <a th:href="@{/hr/salaries/{id}(id=${salary.id})}" class="btn btn-sm btn-info">
                                     <i class="fas fa-eye"></i> Xem
                                 </a>
-                                <a th:href="@{/salaries/form(id=${salary.id})}" class="btn btn-sm btn-primary">
+                                <a th:href="@{/hr/salaries/form(id=${salary.id})}" class="btn btn-sm btn-primary">
                                     <i class="fas fa-edit"></i> Sửa
                                 </a>
+                                <form th:if="${salary.status == 'PENDING'}" 
+                                      th:action="@{/hr/salaries/{id}/approve(id=${salary.id})}" 
+                                      method="post" 
+                                      class="d-inline"
+                                      onsubmit="return confirm('Bạn có chắc chắn muốn duyệt thanh toán lương này?');">
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="fas fa-check-circle"></i> Duyệt
+                                    </button>
+                                </form>
+                                <form th:if="${salary.status == 'PAID'}" 
+                                      th:action="@{/hr/salaries/{id}/cancel(id=${salary.id})}" 
+                                      method="post" 
+                                      class="d-inline"
+                                      onsubmit="return confirm('Bạn có chắc chắn muốn hủy thanh toán lương này?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-times-circle"></i> Hủy
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     </tbody>

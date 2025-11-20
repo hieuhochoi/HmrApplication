@@ -35,8 +35,11 @@ public class SalaryService {
     }
 
     public Salary findById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID bảng lương không được để trống");
+        }
         return salaryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bảng lương"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bảng lương với ID: " + id));
     }
 
     public Salary save(Salary salary) {
