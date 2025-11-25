@@ -32,6 +32,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // Public resources
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        // Swagger/OpenAPI documentation
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                         // Admin routes - chỉ ADMIN
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         // HR routes - ADMIN và HR
