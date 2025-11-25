@@ -27,6 +27,7 @@ C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmap
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\dto\EmployeeResponse.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\mapper\EmployeeMapper.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\repository\OvertimeRequestRepository.java
+C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\config\SwaggerConfig.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\repository\SalaryRepository.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\entity\Education.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\dto\WorkHistoryResponse.java
@@ -64,7 +65,9 @@ C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmap
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\mapper\EducationMapper.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\service\KeycloakUserService.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\controller\InsuranceController.java
+C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\controller\api\DepartmentApiController.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\util\SecurityUtil.java
+C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\controller\api\SalaryApiController.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\repository\MasterDataRepository.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\repository\EmployeeRepository.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\service\SystemConfigService.java
@@ -87,6 +90,7 @@ C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmap
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\service\OvertimeRequestService.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\entity\Salary.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\entity\AuditLog.java
+C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\controller\api\EmployeeApiController.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\service\AuditLogService.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\controller\AttendanceController.java
 C:\Users\OS\OneDrive\Desktop\QLNS\HrmApplication\src\main\java\com\example\hrmapplication\service\WorkHistoryService.java
